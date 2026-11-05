@@ -1,6 +1,6 @@
 # Official game website (Next.js starter)
 
-Mobile-first launch site for a satisfying casual mobile game by **AAA Game Studio**.
+Mobile-first launch site for a satisfying casual mobile game by **Skymare Studio**.
 Everything marked *placeholder* / `TBD` is waiting for real game content.
 
 - **Stack:** Next.js 14 (App Router, static export) + TypeScript + plain CSS design tokens.

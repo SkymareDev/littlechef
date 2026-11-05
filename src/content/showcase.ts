@@ -31,5 +31,5 @@ export const showcase = {
   /** Only real, published quotes with permission/attribution. Leave null to hide. */
   pressQuote: null as null | { quote: string; source: string; logo: Media; url?: string },
   appIcon: slot('01_Brand/app-icon', 'App icon', '1/1', '1080×1080 PNG app icon, rounded corners applied by the page'),
-  studioLine: 'TBD: one line about what AAA Game Studio stands for.',
+  studioLine: 'TBD: one line about what Skymare Studio stands for.',
 };

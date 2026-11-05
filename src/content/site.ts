@@ -7,7 +7,7 @@ import { vid, img } from './assets';
  */
 export const site = {
   gameName: 'Little Chef',
-  studio: 'AAA Game Studio',
+  studio: 'Skymare Studio',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.example-game.com', // TBD
   /** Hero promise. Keep it to one short line. */
   tagline: 'Every level is a little world waiting to be solved.',

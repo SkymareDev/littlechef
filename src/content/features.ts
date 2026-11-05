@@ -6,7 +6,7 @@ export const coreSteps = [
 ];
 
 export const pressFacts = [
-  ['Developer', 'AAA Game Studio'],
+  ['Developer', 'Skymare Studio'],
   ['Genre', 'Casual puzzle, satisfying'],
   ['Platforms', 'iOS, Android'],
   ['Release', 'TBD'],
