@@ -135,9 +135,11 @@ if (fs.existsSync(OUT)) pruneEmpty(OUT);
 fs.writeFileSync(MAP, JSON.stringify(map, null, 2) + '\n');
 
 // ---------- favicon set ----------
-const iconSrc = sources['01_Brand/app-icon'] || sources['01_Brand/mark'] || path.join(PUBLIC, 'favicon.svg');
+const PLACEHOLDER_ICON = path.join(ROOT, 'scripts', 'placeholder-icon.svg');
+const iconSrc = sources['01_Brand/app-icon'] || sources['01_Brand/mark'] || PLACEHOLDER_ICON;
+const markSvg = (map['01_Brand/mark'] || {}).svg ? path.join(SRC, '01_Brand', 'mark.svg') : null;
 const iconTag = path.join(PUBLIC, '.icon-source');
-const iconStamp = `${iconSrc}|${fs.statSync(iconSrc).mtimeMs}`;
+const iconStamp = `${iconSrc}|${fs.statSync(iconSrc).mtimeMs}|${markSvg || ''}`;
 if (!fs.existsSync(iconTag) || fs.readFileSync(iconTag, 'utf8') !== iconStamp || !fs.existsSync(path.join(PUBLIC, 'favicon.ico'))) {
   const png = (size, bg) => {
     let s = sharp(iconSrc, { density: 512 }).resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } });
@@ -162,9 +164,13 @@ if (!fs.existsSync(iconTag) || fs.readFileSync(iconTag, 'utf8') !== iconStamp ||
   fs.writeFileSync(path.join(PUBLIC, 'icon-192.png'), await png(192));
   fs.writeFileSync(path.join(PUBLIC, 'icon-512.png'), await png(512));
   fs.writeFileSync(path.join(PUBLIC, 'apple-touch-icon.png'), await png(180, '#FFFFFF'));
-  if (sources['01_Brand/mark'] && sources['01_Brand/mark'].endsWith('.svg')) fs.copyFileSync(sources['01_Brand/mark'], path.join(PUBLIC, 'favicon.svg'));
+  // a vector favicon only when a real SVG exists (the designer's mark, or the placeholder before any icon is uploaded)
+  const svgFav = path.join(PUBLIC, 'favicon.svg');
+  if (markSvg) fs.copyFileSync(markSvg, svgFav);
+  else if (iconSrc === PLACEHOLDER_ICON) fs.copyFileSync(PLACEHOLDER_ICON, svgFav);
+  else if (fs.existsSync(svgFav)) fs.unlinkSync(svgFav);
   fs.writeFileSync(iconTag, iconStamp);
-  console.log(`  favicon set generated from ${path.basename(iconSrc)}`);
+  console.log(`  favicon set generated from ${iconSrc === PLACEHOLDER_ICON ? 'the placeholder icon (no 01_Brand/app-icon yet)' : path.basename(iconSrc)}`);
 }
 const siteTs = fs.readFileSync(path.join(ROOT, 'src', 'content', 'site.ts'), 'utf8');
 const gameName = (siteTs.match(/gameName:\s*'([^']+)'/) || [, 'Game'])[1];

@@ -19,3 +19,5 @@ export function pick(key: string, prefer: string[] = [...IMG, ...VID]): string |
 }
 export const img = (key: string) => pick(key, IMG);
 export const vid = (key: string) => pick(key, VID);
+/** Logos and marks: a real SVG if the designer supplied one, otherwise the optimised WebP. */
+export const vec = (key: string) => pick(key, ['svg', ...IMG]);

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BrandMark } from './BrandMark';
 import { site, storeLinks } from '@/content/site';
 import { SocialLinks } from './SocialLinks';
 
@@ -9,7 +10,7 @@ export function Footer() {
       <div className="wrap">
         <div className="foot-grid">
           <div>
-            <Link href="/" className="wordmark"><i aria-hidden="true" />{site.gameName}</Link>
+            <Link href="/" className="wordmark"><BrandMark />{site.gameName}</Link>
             <p className="muted" style={{ marginTop: 12 }}>A game by {site.studio}.</p>
             <div style={{ marginTop: 16 }}><SocialLinks placement="footer" compact /></div>
           </div>

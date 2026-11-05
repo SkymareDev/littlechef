@@ -348,3 +348,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .consent-actions { display: flex; gap: var(--s-2); justify-content: flex-end; }
 .sc-ornament .ph { display: none; } .sc-ornament { background: color-mix(in srgb, var(--sun) 35%, transparent); }
 .hero-loop { position: absolute !important; inset: 0; aspect-ratio: auto !important; border-radius: 0; }
+.mark-img { width: 22px; height: 22px; object-fit: contain; display: inline-block; }
+.store-badge { display: inline-flex; border-radius: 10px; transition: transform .18s var(--ease-snap); }
+.store-badge:hover { transform: translateY(-2px); }
+.store-badge img { height: 52px; width: auto; display: block; }

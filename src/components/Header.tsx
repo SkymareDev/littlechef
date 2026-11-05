@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { BrandMark } from './BrandMark';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { site } from '@/content/site';
@@ -20,7 +21,7 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="wrap">
-        <Link href="/" className="wordmark" aria-label={`${site.gameName} home`}><i aria-hidden="true" />{site.gameName}</Link>
+        <Link href="/" className="wordmark" aria-label={`${site.gameName} home`}><BrandMark />{site.gameName}</Link>
         <nav className="nav" aria-label="Main">
           {nav.map((n) => <Link key={n.href} href={n.href} aria-current={path === n.href ? 'page' : undefined}
             onClick={() => n.href === '/community/' && track('community_click', { placement: 'header' })}>{n.label}</Link>)}

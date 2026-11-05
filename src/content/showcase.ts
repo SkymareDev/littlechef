@@ -1,5 +1,5 @@
 import type { Media } from './types';
-import { img, vid } from './assets';
+import { img, vid, vec } from './assets';
 
 /**
  * Content for the single-game showcase page (/showcase).
@@ -12,7 +12,7 @@ const slot = (key: string, alt: string, ratio: string, spec: string): Media => {
 };
 
 export const showcase = {
-  logo: slot('01_Brand/logo-light', 'Game logo', '5/3', 'Logo 1600×960 transparent PNG/SVG, light-background version'),
+  logo: { ...slot('01_Brand/logo-light', 'Game logo', '5/3', 'Logo 1600×960 transparent PNG/SVG, light-background version'), src: vec('01_Brand/logo-light') },
   ornament: slot('01_Brand/ornament', 'Decorative key art element behind the logo', '1/1', '1400×1400 transparent PNG, a signature object or shape'),
   heroBackground: slot('02_KeyArt/keyart-landscape', 'Key art scene', '16/9', '3840×2160 key art, no text, focal point centred'),
   /** One sentence. Shown under the logo and in the closing card. */
