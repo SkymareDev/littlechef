@@ -9,9 +9,6 @@ out/
 .env.local
 .env*.local
 
-# synced media is pulled from Google Drive by npm run sync-assets
-public/media/
-
 # OS / editor
 .DS_Store
 Thumbs.db
