@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# local env (asset path, analytics id)
+.env.local
+.env*.local
+
+# synced media is pulled from Google Drive by npm run sync-assets
+public/media/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

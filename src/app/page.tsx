@@ -1,0 +1,185 @@
+import Link from 'next/link';
+import { site, trailer } from '@/content/site';
+import { levels } from '@/content/levels';
+import { moments } from '@/content/moments';
+import { world } from '@/content/world';
+import { coreSteps } from '@/content/features';
+import { sortedNews } from '@/content/news';
+import { Media } from '@/components/Media';
+import { SolveToy } from '@/components/SolveToy';
+import { StoreButtons } from '@/components/StoreButtons';
+import { SocialLinks } from '@/components/SocialLinks';
+import { LevelRail } from '@/components/LevelRail';
+import { Moments } from '@/components/Moments';
+import { TrailerPlayer } from '@/components/Trailer';
+import { Signup } from '@/components/Signup';
+import { TrackedLink } from '@/components/TrackedLink';
+import { PlayIcon } from '@/components/Icons';
+import { vid, img } from '@/content/assets';
+
+const stepKey = (n: number, id: string) => `03_Video/Steps/step-${n}-${id.toLowerCase()}`;
+const stepMedia = (n: number, id: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${id} step clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
+const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop', ratio: '9/16', spec: '1080×1920 loop' };
+const teamPhoto = { kind: 'image' as const, src: img('04_Images/Studio/team'), alt: 'The team at work on a level', ratio: '4/3', spec: '1600×1200 WebP, real team photo or sketchbook' };
+
+export default function Home() {
+  const jsonLd = {
+    '@context': 'https://schema.org', '@type': 'VideoGame', name: site.gameName, description: site.description, url: site.url,
+    genre: ['Puzzle', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
+    author: { '@type': 'Organization', name: site.studio }, publisher: { '@type': 'Organization', name: site.studio },
+    ...(trailer.src || trailer.youtubeId ? { trailer: { '@type': 'VideoObject', name: `${site.gameName} trailer`, thumbnailUrl: trailer.poster, uploadDate: '2026-01-01' } } : {}),
+  };
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      {/* 01 Hero */}
+      <section className="hero" aria-labelledby="hero-title">
+        <div className="wrap hero-grid">
+          <div className="hero-copy">
+            <h1 id="hero-title">{site.gameName}</h1>
+            <p className="tagline">{site.tagline}</p>
+            <p className="release">{site.releaseLabel}</p>
+          </div>
+          <div className="hero-visual">
+            {/* Replace SolveToy with <Media media={heroLoop} eager /> once the real hero gameplay loop exists */}
+            <div className="phone"><div className="phone-screen">
+              {heroLoop.src ? <Media media={heroLoop} eager className="hero-loop" /> : <SolveToy />}
+            </div></div>
+            {!heroLoop.src && <p className="toy-note">A little taste of the feeling. Real gameplay coming to this spot.</p>}
+          </div>
+          <div className="hero-cta" id="play">
+            <StoreButtons placement="hero" />
+            <div className="hero-secondary">
+              <a className="btn btn-quiet" href="#trailer"><PlayIcon />Watch the trailer</a>
+            </div>
+            <div className="hero-social"><SocialLinks placement="hero" compact /></div>
+          </div>
+        </div>
+      </section>
+
+      {/* 02 Core experience */}
+      <section className="section" aria-labelledby="how-title" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <h2 id="how-title">Simple to pick up. Hard to put down.</h2>
+          <ol className="steps" style={{ listStyle: 'none', padding: 0 }}>
+            {coreSteps.map((s, i) => (
+              <li key={s.id} className="step">
+                <Media media={stepMedia(i + 1, s.title)} label={`${s.title} clip`} />
+                <div><h3>{s.title}</h3><p>{s.line}</p></div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* 03 Every level is a new scenario */}
+      <section className="section" aria-labelledby="levels-title" style={{ background: 'var(--paper)' }}>
+        <div className="wrap">
+          <LevelRail levels={levels} heading={
+            <div><h2 id="levels-title">Every level is a new little situation</h2>
+              <p className="lede">No two levels play the same. Each one sets up a problem, lets you find the trick, and pays it off.</p></div>
+          } />
+        </div>
+      </section>
+
+      {/* 04 Satisfying moments */}
+      <section className="section" aria-labelledby="moments-title">
+        <div className="wrap"><Moments moments={moments} /></div>
+      </section>
+
+      {/* 05 World */}
+      {world.length > 0 && (
+        <section className="section" aria-labelledby="world-title" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <h2 id="world-title">A small world with a lot going on</h2>
+            <div className="world">
+              {world.map((w) => (
+                <figure key={w.id} style={{ margin: 0 }}>
+                  <Media media={w.media} label={`${w.name} art`} />
+                  <figcaption><h3>{w.name}</h3><p>{w.note}</p></figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 06 Trailer */}
+      <section className="section" id="trailer" aria-labelledby="trailer-title" style={{ paddingTop: 0 }}>
+        <div className="wrap trailer"><div className="trailer-inner">
+          <h2 id="trailer-title">Watch the trailer</h2>
+          <TrailerPlayer />
+        </div></div>
+      </section>
+
+      {/* 07 Community */}
+      <section className="section" aria-labelledby="community-title" style={{ background: 'var(--paper)' }}>
+        <div className="wrap">
+          <h2 id="community-title">Join the community</h2>
+          <p className="lede">Share your best solves, vote on favourite levels and see what other players made.</p>
+          <div className="community">
+            <div className="c-card wide" id="notify">
+              <h3>Be first to play</h3>
+              <p className="muted">One email on launch day, plus the occasional new level preview.</p>
+              <Signup placement="home" />
+              <SocialLinks placement="community" />
+            </div>
+            <div className="c-card">
+              <span className="badge">Opens at launch</span>
+              <h3>Weekly challenge</h3>
+              <p className="muted">Solve a featured level your own way and post it with the game’s tag.</p>
+            </div>
+            <div className="c-card wide">
+              <span className="badge">Opens at launch</span>
+              <h3>Fan art wall</h3>
+              <p className="muted">Selected player art, credited to the artist.</p>
+            </div>
+            <div className="c-card">
+              <span className="badge">Opens at launch</span>
+              <h3>Favourite level poll</h3>
+              <p className="muted">Pick the level that made you grin.</p>
+            </div>
+          </div>
+          <p style={{ marginTop: 32 }}><TrackedLink href="/community/" event="community_click" props={{ placement: 'home' }} className="btn btn-quiet">See the community page</TrackedLink></p>
+        </div>
+      </section>
+
+      {/* 08 Behind the game + 09 News */}
+      <section className="section" aria-labelledby="behind-title">
+        <div className="wrap">
+          <div className="behind">
+            <Media media={teamPhoto} label="Studio photo" />
+            <div>
+              <h2 id="behind-title">Made by people who love the click</h2>
+              <p className="lede">{site.studio} is a small team obsessed with the moment something finally fits. We share how levels go from napkin sketch to the version you play.</p>
+              <p style={{ marginTop: 24 }}><Link className="btn btn-quiet" href="/about/">Meet the studio</Link></p>
+            </div>
+          </div>
+          <div style={{ marginTop: 96 }}>
+            <h2>News and devlog</h2>
+            <div className="news-grid">
+              {sortedNews().slice(0, 3).map((p) => (
+                <Link key={p.slug} href={`/news/${p.slug}/`} className="post">
+                  <Media media={p.thumbnail} label="Post image" />
+                  <span className="meta">{p.category}, {new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  <h3>{p.title}</h3>
+                  <p className="muted">{p.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 10 Final CTA */}
+      <section className="section final" aria-labelledby="final-title" style={{ background: 'var(--paper)' }}>
+        <div className="wrap">
+          <h2 id="final-title">Ready for the next level?</h2>
+          <p className="lede" style={{ marginInline: 'auto' }}>{site.releaseLabel}.</p>
+          <StoreButtons placement="final" />
+        </div>
+      </section>
+    </>
+  );
+}
