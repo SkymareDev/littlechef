@@ -8,7 +8,7 @@ import { PageView } from '@/components/PageView';
 import { Analytics } from '@/components/Analytics';
 import { ConsentBanner } from '@/components/ConsentBanner';
 
-export const metadata: Metadata = { metadataBase: new URL(site.url), ...pageMeta(), icons: { icon: '/favicon.svg' } };
+export const metadata: Metadata = { metadataBase: new URL(site.url), ...pageMeta(), icons: { icon: [{ url: '/favicon.ico', sizes: '48x48' }, { url: '/favicon.svg', type: 'image/svg+xml' }, { url: '/icon-192.png', sizes: '192x192', type: 'image/png' }], apple: '/apple-touch-icon.png' }, manifest: '/site.webmanifest' };
 export const viewport: Viewport = {
   width: 'device-width', initialScale: 1, viewportFit: 'cover',
   themeColor: [{ media: '(prefers-color-scheme: light)', color: '#EAF1F4' }, { media: '(prefers-color-scheme: dark)', color: '#0E1F2E' }],

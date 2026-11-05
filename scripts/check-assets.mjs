@@ -2,7 +2,7 @@
 /**
  * npm run check-assets
  * Fills the "Kết quả" column (L) of the task sheet by checking the real files in Drive:
- *   ✅ Done      every required file is there with the exact standard name
+ *   ✅ Done      every required file is there with the standard name (images: PNG/JPG/WebP all fine)
  *   ⚠ Thiếu     some, not all, of the row's files are there
  *   ❌ Sai tên   a file in the folder looks like this row's file but the name is wrong
  *   ⬜ Trống     nothing yet
@@ -76,13 +76,18 @@ function parseSpec(spec) {
       if (alt.includes('…')) {
         const name = alt.replace('…', '').trim();
         const m = name.match(/^(.*?)(\d+)(\.[a-z0-9]+)$/i);
-        return { re: m ? new RegExp(`^${esc(m[1])}\\d+${esc(m[3])}$`) : new RegExp(`^${esc(name)}$`), hint: norm(m ? m[1] : name) };
+        const img = m && /^\.(png|jpe?g|webp|avif|gif|tiff?)$/i.test(m[3]);
+        return { re: m ? new RegExp(`^${esc(m[1])}\\d+${img ? '\\.(png|jpe?g|webp|avif|gif|tiff?)' : esc(m[3])}$`) : new RegExp(`^${esc(name)}$`), hint: norm(m ? m[1] : name) };
       }
-      return { re: new RegExp(`^${alt.split(/<[^>]+>/).map(esc).join('[^/]+')}$`), hint: norm(alt.split('<')[0]) };
+      // images: any raster format is accepted (the sync converts it to WebP)
+      const m = alt.match(/^(.*)\.(png|jpe?g|webp|avif|gif|tiff?)$/i);
+      const body = (m ? m[1] : alt).split(/<[^>]+>/).map(esc).join('[^/]+');
+      return { re: new RegExp(`^${body}${m ? '\\.(png|jpe?g|webp|avif|gif|tiff?)' : ''}$`), hint: norm(alt.split('<')[0]) };
     }));
 }
 const listFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true })
   .filter((d) => d.isFile() && !d.name.startsWith('.') && !d.name.startsWith('~$') && d.name !== 'desktop.ini').map((d) => d.name) : []);
+const nf = (f) => f.replace(/\.[^.]+$/, (x) => x.toLowerCase()); // extension case does not matter, the name does
 const prefixLen = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
 
 // ---------- run ----------
@@ -106,7 +111,7 @@ for (const key of new Set(rows.map((r) => r.key))) {
   const inFolder = rows.filter((r) => r.key === key);
   const files = listFiles(path.join(ASSETS, key));
   for (const f of files) {
-    if (inFolder.some((r) => r.groups.flat().some((a) => a.re.test(f)))) continue;
+    if (inFolder.some((r) => r.groups.flat().some((a) => a.re.test(nf(f))))) continue;
     let best = null, score = 0;
     for (const r of inFolder) for (const a of r.groups.flat()) { const s = prefixLen(norm(f), a.hint); if (s > score) { score = s; best = r; } }
     const target = score >= 3 ? [best] : inFolder.filter((r) => r.groups.length);
@@ -120,7 +125,7 @@ for (const r of rows) {
   if (r.key === '—') text = '— Không cần file';
   else {
     const files = listFiles(path.join(ASSETS, r.key));
-    const ok = r.groups.filter((alts) => files.some((f) => alts.some((a) => a.re.test(f)))).length;
+    const ok = r.groups.filter((alts) => files.some((f) => alts.some((a) => a.re.test(nf(f))))).length;
     const strays = strayFor.get(r.n) || [];
     if (r.groups.length && ok === r.groups.length) { text = '✅ Done'; tally.done++; }
     else if (strays.length) { text = `❌ Sai tên: ${strays.slice(0, 2).join(', ')}${strays.length > 2 ? '…' : ''}`; tally.wrong++; }

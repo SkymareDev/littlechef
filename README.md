@@ -63,7 +63,7 @@ The team drops finished files into the shared Drive folder (`G:/My Drive/Little 
 npm run sync-assets
 ```
 
-It copies images and videos into `public/media`, updates `src/content/assets.generated.json`, lists which slots are still empty or over their size budget, and then runs `npm run check-assets`, which writes the "Kết quả" column of the task sheet (✅ Done / ⚠ Thiếu / ❌ Sai tên / ⬜ Trống) by checking every row's files in Drive. Close the Excel file before running. Anything not found keeps its placeholder on the site. Text, legal and press documents stay in Drive.
+Images (PNG/JPG/WebP/AVIF) are resized to the size each slot needs and saved as WebP (only the WebP ships); SVG and video are copied as-is; the favicon set (`favicon.ico`, `icon-192/512.png`, `apple-touch-icon.png`, `site.webmanifest`) is generated from `01_Brand/app-icon` and the share image from `02_KeyArt/og-default`. It writes the results into `public/media`, updates `src/content/assets.generated.json`, lists which slots are still empty or over their size budget, and then runs `npm run check-assets`, which writes the "Kết quả" column of the task sheet (✅ Done / ⚠ Thiếu / ❌ Sai tên / ⬜ Trống) by checking every row's files in Drive. Close the Excel file before running. Anything not found keeps its placeholder on the site. Text, legal and press documents stay in Drive.
 
 ## Asset replacement guide
 
@@ -80,7 +80,7 @@ Put files in `public/media/...` and set `src` (and `poster` for video) on the ma
 | Screenshots | 1290×2796 PNG/WebP | ≤500 KB |
 | News thumbnails | 1600×900 WebP, no text | ≤200 KB |
 | Open Graph image | 1200×630 PNG/JPG, `public/og/og-default.png` (current file is a placeholder) | ≤300 KB |
-| Favicon / app icon | `public/favicon.svg`, plus 180×180 apple-touch-icon | — |
+| Favicon set | generated from `01_Brand/app-icon.png` by `npm run sync-assets` | — |
 
 Encoding tip: `ffmpeg -i in.mov -vf scale=1080:-2 -an -c:v libx264 -crf 26 -preset slow -movflags +faststart out.mp4`
 and `-c:v libvpx-vp9 -crf 36 -b:v 0` for WebM.

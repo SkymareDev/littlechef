@@ -14,3 +14,5 @@ out/
 Thumbs.db
 desktop.ini
 *.log
+# local stamp for the generated favicon set
+public/.icon-source
