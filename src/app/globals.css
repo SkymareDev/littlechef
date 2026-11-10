@@ -146,10 +146,18 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .step p { color: var(--ink-soft); margin-top: 6px; }
 
 /* ===== Levels rail ===== */
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: var(--s-4); overflow-x: auto;
+  scroll-snap-type: x mandatory; scroll-padding-inline: 8px; padding: var(--s-6) 8px var(--s-5); margin-inline: -8px;
+  scrollbar-width: none; overscroll-behavior-x: contain; }
+.rail::-webkit-scrollbar { display: none; }
+@media (min-width: 640px) { .rail { grid-auto-columns: calc((100% - 2 * var(--s-4)) / 3); } }
+@media (min-width: 1000px) { .rail { gap: var(--s-5); grid-auto-columns: calc((100% - 3 * var(--s-5)) / 4); } }
+.level-card { display: flex; flex-direction: column; }
+.rail-progress { height: 4px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); overflow: hidden; }
+.rail-progress span { display: block; height: 100%; border-radius: inherit; background: color-mix(in srgb, currentColor 55%, transparent); transition: transform .25s var(--ease-snap, ease), width .25s ease; }
+.icon-btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
+.icon-btn:disabled:active { transform: none; }
 .levels-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s-4); }
-.rail { display: grid; grid-auto-flow: column; grid-auto-columns: min(68vw, 260px); gap: var(--s-4); overflow-x: auto;
-  scroll-snap-type: x mandatory; padding: var(--s-6) var(--s-5) var(--s-4); margin-inline: calc(-1 * var(--s-5)); scrollbar-width: thin; overscroll-behavior-x: contain; }
-@media (min-width: 1248px) { .rail { margin-inline: calc((var(--wrap) - 100vw) / 2 + 0px); padding-inline: calc((100vw - var(--wrap)) / 2); } }
 .level-card { scroll-snap-align: start; background: var(--paper); border-radius: var(--r-card); padding: 10px 10px var(--s-4); box-shadow: var(--shadow-lift); }
 .level-card .num { font: 800 var(--t-sm)/1 var(--font-body); color: var(--ink-soft); margin: var(--s-4) 8px 6px; font-variant-numeric: tabular-nums; }
 .level-card h3 { margin-inline: 8px; }
@@ -257,8 +265,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .ph { place-content: end start; text-align: left; }
 .ph b { justify-self: start; }
 .toy-board { padding: 8px 10px; gap: 14px; }
-.rail { scroll-padding-inline: var(--s-5); }
-@media (min-width: 1248px) { .rail { scroll-padding-inline: calc((100vw - var(--wrap)) / 2); } }
 .c-card { background: var(--mist); }
 .c-card .social, .c-card .signup input { background: var(--paper); }
 .hero-social .social { background: var(--paper); }
