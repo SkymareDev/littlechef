@@ -20,7 +20,6 @@ import { vid, img } from '@/content/assets';
 const stepKey = (n: number, id: string) => `03_Video/Steps/step-${n}-${id.toLowerCase()}`;
 const stepMedia = (n: number, id: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${id} step clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
 const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop', ratio: '9/16', spec: '1080×1920 loop' };
-const teamPhoto = { kind: 'image' as const, src: img('04_Images/Studio/team'), alt: 'The team at work on a level', ratio: '4/3', spec: '1600×1200 WebP, real team photo or sketchbook' };
 
 export default function Home() {
   const jsonLd = {
@@ -145,19 +144,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 08 Behind the game + 09 News */}
-      <section className="section" aria-labelledby="behind-title">
+      {/* 09 News */}
+      <section className="section" aria-labelledby="news-title">
         <div className="wrap">
-          <div className="behind">
-            <Media media={teamPhoto} label="Studio photo" />
-            <div>
-              <h2 id="behind-title">Made by people who love the click</h2>
-              <p className="lede">{site.studio} is a small team obsessed with the moment something finally fits. We share how levels go from napkin sketch to the version you play.</p>
-              <p style={{ marginTop: 24 }}><Link className="btn btn-quiet" href="/about/">Meet the studio</Link></p>
-            </div>
-          </div>
-          <div style={{ marginTop: 96 }}>
-            <h2>News and devlog</h2>
+          <div>
+            <h2 id="news-title">News and devlog</h2>
             <div className="news-grid">
               {sortedNews().slice(0, 3).map((p) => (
                 <Link key={p.slug} href={`/news/${p.slug}/`} className="post">
