@@ -15,14 +15,13 @@ import { TrailerPlayer } from '@/components/Trailer';
 import { Signup } from '@/components/Signup';
 import { TrackedLink } from '@/components/TrackedLink';
 import { PlayIcon } from '@/components/Icons';
-import { vid, img, vec } from '@/content/assets';
+import { vid, img } from '@/content/assets';
 
 const stepKey = (n: number, id: string) => `03_Video/Steps/step-${n}-${id.toLowerCase()}`;
 const stepMedia = (n: number, id: string, title: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${title}: gameplay clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
 const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop: making a pizza in the Pizza House', ratio: '9/16', spec: '1080×1920 loop' };
 
 export default function Home() {
-  const heroLogo = vec('01_Brand/logo-light');
   const heroBg = img('02_KeyArt/hero-bg');
   const finalBg = img('02_KeyArt/keyart-landscape');
   const jsonLd = {
@@ -41,10 +40,7 @@ export default function Home() {
         {heroBg && <div className="scene-bg" aria-hidden="true"><img src={heroBg} alt="" /></div>}
         <div className="wrap hero-grid">
           <div className="hero-copy">
-            <h1 id="hero-title" className={heroLogo ? 'hero-logo' : undefined}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {heroLogo ? <img src={heroLogo} alt={site.gameName} width={960} height={960} /> : site.gameName}
-            </h1>
+            <h1 id="hero-title" className="sr-only">{site.gameName}</h1>
             <p className="tagline">{site.tagline}</p>
             <p className="release">{site.releaseLabel}</p>
           </div>
