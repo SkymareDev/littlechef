@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { site, trailer } from '@/content/site';
 import { levels } from '@/content/levels';
-import { moments } from '@/content/moments';
 import { world } from '@/content/world';
 import { coreSteps } from '@/content/features';
 import { sortedNews } from '@/content/news';
@@ -10,7 +9,6 @@ import { SolveToy } from '@/components/SolveToy';
 import { StoreButtons } from '@/components/StoreButtons';
 import { SocialLinks } from '@/components/SocialLinks';
 import { LevelRail } from '@/components/LevelRail';
-import { Moments } from '@/components/Moments';
 import { TrailerPlayer } from '@/components/Trailer';
 import { Signup } from '@/components/Signup';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -84,11 +82,6 @@ export default function Home() {
               <p className="lede">Start with pizza, then unlock fried chicken, hot dogs, burgers, steak and more. Every house has its own ingredients, tools and tricks.</p></div>
           } />
         </div>
-      </section>
-
-      {/* 04 Satisfying moments */}
-      <section className="section" aria-labelledby="moments-title">
-        <div className="wrap"><Moments moments={moments} /></div>
       </section>
 
       {/* 05 World */}
