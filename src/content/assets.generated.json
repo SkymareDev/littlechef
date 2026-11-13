@@ -17,6 +17,9 @@
   "02_KeyArt/og-default": {
     "webp": "/media/02_KeyArt/og-default.webp"
   },
+  "02_KeyArt/hero-bg": {
+    "webp": "/media/02_KeyArt/hero-bg.webp"
+  },
   "03_Video/Hero/hero-loop-720": {
     "mp4": "/media/03_Video/Hero/hero-loop-720.mp4"
   },

@@ -23,6 +23,8 @@ const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), 
 
 export default function Home() {
   const heroLogo = vec('01_Brand/logo-light');
+  const heroBg = img('02_KeyArt/hero-bg');
+  const finalBg = img('02_KeyArt/keyart-landscape');
   const jsonLd = {
     '@context': 'https://schema.org', '@type': 'VideoGame', name: site.gameName, description: site.description, url: site.url,
     genre: ['Cooking', 'Simulation', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
@@ -34,7 +36,9 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* 01 Hero */}
-      <section className="hero" aria-labelledby="hero-title">
+      <section className={heroBg ? 'hero hero-scene' : 'hero'} aria-labelledby="hero-title">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {heroBg && <div className="scene-bg" aria-hidden="true"><img src={heroBg} alt="" /></div>}
         <div className="wrap hero-grid">
           <div className="hero-copy">
             <h1 id="hero-title" className={heroLogo ? 'hero-logo' : undefined}>
@@ -168,7 +172,9 @@ export default function Home() {
       </section>
 
       {/* 10 Final CTA */}
-      <section className="section final" aria-labelledby="final-title" style={{ background: 'var(--paper)' }}>
+      <section className={finalBg ? 'section final final-scene' : 'section final'} aria-labelledby="final-title" style={finalBg ? undefined : { background: 'var(--paper)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {finalBg && <div className="scene-bg" aria-hidden="true"><img src={finalBg} alt="" loading="lazy" /></div>}
         <div className="wrap">
           <h2 id="final-title">Ready to open your first restaurant?</h2>
           <p className="lede" style={{ marginInline: 'auto' }}>{site.releaseLabel}.</p>

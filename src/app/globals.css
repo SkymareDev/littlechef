@@ -362,3 +362,44 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 /* Hero logo: the 1600×960 canvas keeps the board centred in a square, so crop to that square. */
 .hero h1.hero-logo { max-width: none; line-height: 0; }
 .hero-logo img { display: block; width: min(400px, 78vw); height: auto; aspect-ratio: 1 / 1; object-fit: cover; margin-left: -18px; }
+
+/* ---------- Game look: illustrated scenes behind the hero and the final CTA ---------- */
+.hero-scene, .final-scene { position: relative; isolation: isolate; }
+.scene-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.scene-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 100% 45%; transform-origin: 100% 45%; animation: scene-drift 30s ease-in-out infinite alternate; }
+.scene-bg::after { content: ""; position: absolute; inset: 0; }
+.hero-scene .scene-bg::after {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--mist) 92%, transparent) 0%, color-mix(in srgb, var(--mist) 70%, transparent) 34%, color-mix(in srgb, var(--mist) 10%, transparent) 62%, transparent 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--mist) 35%, transparent) 0%, transparent 14%, transparent 78%, var(--mist) 100%);
+}
+@media (max-width: 899px) { .hero-scene .scene-bg::after { background: linear-gradient(to bottom, color-mix(in srgb, var(--mist) 80%, transparent), color-mix(in srgb, var(--mist) 55%, transparent) 50%, var(--mist)); } }
+.final-scene .scene-bg img { object-position: 50% 40%; }
+.final-scene .scene-bg::after { background: radial-gradient(ellipse at center, color-mix(in srgb, var(--mist) 82%, transparent) 0%, color-mix(in srgb, var(--mist) 55%, transparent) 55%, color-mix(in srgb, var(--mist) 30%, transparent) 100%); }
+.final-scene { padding-block: calc(var(--s-8) * 1.4); }
+.final-scene h2, .final-scene .lede { text-shadow: 0 2px 18px var(--mist), 0 0 4px var(--mist); }
+.final-scene .lede { color: var(--ink); font-weight: 600; }
+@keyframes scene-drift { from { transform: scale(1.04) translate3d(0, 0, 0); } to { transform: scale(1.09) translate3d(1%, 1%, 0); } }
+@media (prefers-reduced-motion: reduce) { .scene-bg img { animation: none; transform: scale(1.04); } }
+
+/* ---------- Game look: buttons built from the in-game button sprites (9-slice) ---------- */
+:root { --font-game: 'Sniglet', var(--font-display); }
+.btn-primary, .btn-quiet, .store {
+  --h: 56px; --edge: #b5600f;
+  height: var(--h); min-height: 0; padding: 0 calc(var(--h) * .42) calc(var(--h) * .1);
+  background: none; box-shadow: none; border-radius: 0; color: #fff;
+  border: 0 solid transparent; border-image-slice: 80 92 92 92 fill; border-image-repeat: stretch;
+  border-image-width: calc(var(--h) * .44) calc(var(--h) * .51) calc(var(--h) * .51) calc(var(--h) * .51);
+  font: 800 1.1rem/1 var(--font-game); letter-spacing: .01em; text-decoration: none; justify-content: center;
+  text-shadow: 0 2px 0 var(--edge), 2px 0 0 var(--edge), -2px 0 0 var(--edge), 0 -2px 0 var(--edge), 0 3px 0 var(--edge), 2px 2px 0 var(--edge), -2px 2px 0 var(--edge);
+  transition: transform .18s var(--ease-snap), filter .18s;
+}
+.btn-primary { border-image-source: url('/ui/btn-yellow.png'); }
+.btn-quiet { border-image-source: url('/ui/btn-green.png'); --edge: #4b6b00; }
+.store { border-image-source: url('/ui/btn-green-outline.png'); --edge: #4b6b00; --h: 60px; border-image-slice: 88 100 100 100 fill; min-width: 170px; }
+.btn-primary:hover, .btn-quiet:hover, .store:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: none; }
+.btn-primary:active, .btn-quiet:active, .store:active { transform: translateY(2px) scale(.98); }
+.btn-quiet svg, .store svg { filter: drop-shadow(0 2px 0 var(--edge)); }
+.store small { font: 700 11px/1.1 var(--font-body); opacity: 1; letter-spacing: 0; text-shadow: 0 1px 0 var(--edge), 1px 0 0 var(--edge), -1px 0 0 var(--edge), 0 -1px 0 var(--edge); }
+.header-cta { --h: 46px; font-size: 1rem; }
+.signup .btn-primary { --h: 52px; }
