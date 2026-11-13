@@ -2,17 +2,23 @@
   "01_Brand/ornament": {
     "webp": "/media/01_Brand/ornament.webp"
   },
+  "01_Brand/app-icon": {
+    "webp": "/media/01_Brand/app-icon.webp"
+  },
+  "01_Brand/logo-light": {
+    "webp": "/media/01_Brand/logo-light.webp"
+  },
   "02_KeyArt/keyart-landscape": {
     "webp": "/media/02_KeyArt/keyart-landscape.webp"
   },
   "02_KeyArt/og-default": {
     "webp": "/media/02_KeyArt/og-default.webp"
   },
-  "03_Video/Hero/hero_loop_720": {
-    "mp4": "/media/03_Video/Hero/hero_loop_720.mp4"
+  "03_Video/Hero/hero-loop-720": {
+    "mp4": "/media/03_Video/Hero/hero-loop-720.mp4"
   },
-  "03_Video/Hero/hero_loop": {
-    "mp4": "/media/03_Video/Hero/hero_loop.mp4"
+  "03_Video/Hero/hero-loop (1)": {
+    "mp4": "/media/03_Video/Hero/hero-loop%20(1).mp4"
   },
   "03_Video/Hero/step-1-discover": {
     "mp4": "/media/03_Video/Hero/step-1-discover.mp4"
@@ -29,6 +35,15 @@
   },
   "03_Video/Hero/hero-poster": {
     "webp": "/media/03_Video/Hero/hero-poster.webp"
+  },
+  "03_Video/Hero/level-001": {
+    "mp4": "/media/03_Video/Hero/level-001.mp4"
+  },
+  "03_Video/Hero/level-002": {
+    "mp4": "/media/03_Video/Hero/level-002.mp4"
+  },
+  "03_Video/Hero/level-003": {
+    "mp4": "/media/03_Video/Hero/level-003.mp4"
   },
   "03_Video/Steps/step-1-discover": {
     "mp4": "/media/03_Video/Steps/step-1-discover.mp4",
@@ -120,6 +135,9 @@
   },
   "04_Images/Screenshots/screen-03": {
     "webp": "/media/04_Images/Screenshots/screen-03.webp"
+  },
+  "04_Images/Screenshots/screen-04": {
+    "webp": "/media/04_Images/Screenshots/screen-04.webp"
   },
   "04_Images/Showcase/showcase-01": {
     "webp": "/media/04_Images/Showcase/showcase-01.webp"
