@@ -14,7 +14,7 @@ export function ConsentBanner() {
   };
   return (
     <div className="consent" role="region" aria-label="Cookie choice">
-      <p>We use analytics cookies to see which levels people like. You can change this any time in your browser.</p>
+      <p>We use analytics cookies to see which parts of the site people like. You can change this any time in your browser.</p>
       <div className="consent-actions">
         <button className="btn btn-quiet" onClick={() => choose('denied')}>Decline</button>
         <button className="btn btn-primary" onClick={() => choose('granted')}>Accept</button>
