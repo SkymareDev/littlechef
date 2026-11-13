@@ -15,7 +15,7 @@ export function Signup({ placement }: { placement: string }) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setState('err'); setMsg('Enter an email address like name@example.com.'); return; }
     // TODO: POST to your email provider here.
     track('newsletter_signup', { placement });
-    setState('ok'); setMsg('You’re on the list. We’ll email you on launch day.');
+    setState('ok'); setMsg('You’re on the list. We’ll email you when the iOS version launches.');
     e.currentTarget.reset();
   }
   return (

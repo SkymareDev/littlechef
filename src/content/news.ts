@@ -13,7 +13,7 @@ export const news: NewsPost[] = [
       'Little Chef is a cosy cooking game for iOS and Android. Customers walk in, tell you what they want, and it is up to you to remember the order and cook it exactly right.',
       'Every dish is made by hand. Roll out the dough, spread the tomato sauce, sprinkle the cheese and slide the pizza into the oven. Later you will dip and fry chicken, grill sausages, stack burgers and sear steaks.',
       'Serve fast and accurately and your customers leave a tip on top of the price. Spend your coins on new ingredients like Pepperoni, Mushroom and Shrimp, grow your menu, and save up to open your next restaurant.',
-      'Little Chef is coming soon. Sign up on the home page and we will email you on launch day.',
+      'Little Chef is out now on Google Play, and the iOS version is on its way. Sign up on the home page and we will email you when it lands on the App Store.',
     ],
   },
   {

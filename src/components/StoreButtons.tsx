@@ -8,8 +8,8 @@ import { vec } from '@/content/assets';
 export function StoreButtons({ placement }: { placement: string }) {
   const soon = site.releaseState === 'coming-soon';
   const items = [
-    { id: 'google', badge: vec('08_Store-Badges/badge-googleplay'), event: 'google_play_click' as const, href: storeLinks.googlePlay, small: soon ? 'Pre-register on' : 'Get it on', big: 'Google Play' },
-    { id: 'apple', badge: vec('08_Store-Badges/badge-appstore'), event: 'app_store_click' as const, href: storeLinks.appStore, small: soon ? 'Notify me on the' : 'Download on the', big: 'App Store' },
+    { id: 'google', badge: vec('08_Store-Badges/badge-googleplay'), event: 'google_play_click' as const, href: storeLinks.googlePlay, small: storeLinks.googlePlay ? 'Get it on' : soon ? 'Pre-register on' : 'Coming soon on', big: 'Google Play' },
+    { id: 'apple', badge: vec('08_Store-Badges/badge-appstore'), event: 'app_store_click' as const, href: storeLinks.appStore, small: storeLinks.appStore ? 'Download on the' : 'Coming soon on the', big: 'App Store' },
   ];
   return (
     <div className="store-row">

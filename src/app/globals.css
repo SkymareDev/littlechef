@@ -571,3 +571,6 @@ main > section:not(.wrap) .trailer h2, .trailer h2 {
 }
 .play span svg { width: 38px; height: 38px; filter: drop-shadow(0 3px 0 #b5600f) drop-shadow(2px 0 0 #b5600f) drop-shadow(-2px 0 0 #b5600f) drop-shadow(0 -2px 0 #b5600f); }
 .play:hover span { transform: translateY(-3px) scale(1.04); }
+/* ---------- v7: hero art softened the same way as the grass below, so it never competes with the content ---------- */
+.hero-scene .scene-bg { background: #EFEBC4; }
+.hero-scene .scene-bg img { opacity: .6; filter: saturate(.78) brightness(1.03) blur(1.5px); }

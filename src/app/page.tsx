@@ -115,8 +115,8 @@ export default function Home() {
           <p className="lede">Share your best dishes, vote for your favourite restaurant and see what other chefs cooked up.</p>
           <div className="community">
             <div className="c-card wide" id="notify">
-              <h3>Be first to play</h3>
-              <p className="muted">One email on launch day, plus the occasional sneak peek at a new restaurant.</p>
+              <h3>Get the news</h3>
+              <p className="muted">One email when Little Chef lands on the App Store, plus the occasional sneak peek at a new restaurant.</p>
               <Signup placement="home" />
               <SocialLinks placement="community" />
             </div>
