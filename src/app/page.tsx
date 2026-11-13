@@ -39,7 +39,7 @@ export default function Home() {
           <div className="hero-copy">
             <h1 id="hero-title" className={heroLogo ? 'hero-logo' : undefined}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {heroLogo ? <img src={heroLogo} alt={site.gameName} width={960} height={960} fetchPriority="high" /> : site.gameName}
+              {heroLogo ? <img src={heroLogo} alt={site.gameName} width={960} height={960} /> : site.gameName}
             </h1>
             <p className="tagline">{site.tagline}</p>
             <p className="release">{site.releaseLabel}</p>
