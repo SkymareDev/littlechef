@@ -21,7 +21,6 @@ const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), 
 
 export default function Home() {
   const heroBg = img('02_KeyArt/hero-bg');
-  const finalBg = img('02_KeyArt/keyart-landscape');
   const jsonLd = {
     '@context': 'https://schema.org', '@type': 'VideoGame', name: site.gameName, description: site.description, url: site.url,
     genre: ['Cooking', 'Simulation', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
@@ -160,14 +159,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10 Final CTA */}
-      <section className={finalBg ? 'section final final-scene' : 'section final'} aria-labelledby="final-title" style={finalBg ? undefined : { background: 'var(--paper)' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {finalBg && <div className="scene-bg" aria-hidden="true"><img src={finalBg} alt="" loading="lazy" /></div>}
-        <div className="wrap">
-          <h2 id="final-title">Ready to open your first restaurant?</h2>
-          <p className="lede" style={{ marginInline: 'auto' }}>{site.releaseLabel}.</p>
-          <StoreButtons placement="final" />
+      {/* 10 Final CTA: the Pizza House, the Little Chef and the Burger House standing on the grass */}
+      <section className="section final final-yard" aria-labelledby="final-title">
+        <div className="wrap final-stage">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="yard yard-pizza" src="/ui/house-pizza.webp" alt="" aria-hidden="true" loading="lazy" width={600} height={782} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="yard yard-chef" src="/ui/chef.webp" alt="" aria-hidden="true" loading="lazy" width={339} height={518} />
+          <div className="final-board">
+            <h2 id="final-title">Ready to open your first restaurant?</h2>
+            <p className="lede" style={{ marginInline: 'auto' }}>{site.releaseLabel}.</p>
+            <StoreButtons placement="final" />
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="yard yard-burger" src="/ui/house-burger.webp" alt="" aria-hidden="true" loading="lazy" width={606} height={604} />
         </div>
       </section>
     </>
