@@ -1,1 +1,157 @@
-{}
+{
+  "01_Brand/ornament": {
+    "webp": "/media/01_Brand/ornament.webp"
+  },
+  "02_KeyArt/keyart-landscape": {
+    "webp": "/media/02_KeyArt/keyart-landscape.webp"
+  },
+  "02_KeyArt/og-default": {
+    "webp": "/media/02_KeyArt/og-default.webp"
+  },
+  "03_Video/Hero/hero_loop_720": {
+    "mp4": "/media/03_Video/Hero/hero_loop_720.mp4"
+  },
+  "03_Video/Hero/hero_loop": {
+    "mp4": "/media/03_Video/Hero/hero_loop.mp4"
+  },
+  "03_Video/Hero/step-1-discover": {
+    "mp4": "/media/03_Video/Hero/step-1-discover.mp4"
+  },
+  "03_Video/Hero/step-3-satisfy": {
+    "mp4": "/media/03_Video/Hero/step-3-satisfy.mp4"
+  },
+  "03_Video/Hero/step-2-interact": {
+    "mp4": "/media/03_Video/Hero/step-2-interact.mp4"
+  },
+  "03_Video/Hero/hero-loop": {
+    "mp4": "/media/03_Video/Hero/hero-loop.mp4",
+    "webm": "/media/03_Video/Hero/hero-loop.webm"
+  },
+  "03_Video/Hero/hero-poster": {
+    "webp": "/media/03_Video/Hero/hero-poster.webp"
+  },
+  "03_Video/Steps/step-1-discover": {
+    "mp4": "/media/03_Video/Steps/step-1-discover.mp4",
+    "webm": "/media/03_Video/Steps/step-1-discover.webm"
+  },
+  "03_Video/Steps/step-2-interact": {
+    "mp4": "/media/03_Video/Steps/step-2-interact.mp4",
+    "webm": "/media/03_Video/Steps/step-2-interact.webm"
+  },
+  "03_Video/Steps/step-3-satisfy": {
+    "mp4": "/media/03_Video/Steps/step-3-satisfy.mp4",
+    "webm": "/media/03_Video/Steps/step-3-satisfy.webm"
+  },
+  "03_Video/Levels/level-001": {
+    "webp": "/media/03_Video/Levels/level-001.webp",
+    "mp4": "/media/03_Video/Levels/level-001.mp4",
+    "webm": "/media/03_Video/Levels/level-001.webm"
+  },
+  "03_Video/Levels/level-002": {
+    "webp": "/media/03_Video/Levels/level-002.webp",
+    "mp4": "/media/03_Video/Levels/level-002.mp4",
+    "webm": "/media/03_Video/Levels/level-002.webm"
+  },
+  "03_Video/Levels/level-003": {
+    "webp": "/media/03_Video/Levels/level-003.webp",
+    "mp4": "/media/03_Video/Levels/level-003.mp4",
+    "webm": "/media/03_Video/Levels/level-003.webm"
+  },
+  "03_Video/Levels/level-004": {
+    "webp": "/media/03_Video/Levels/level-004.webp",
+    "mp4": "/media/03_Video/Levels/level-004.mp4",
+    "webm": "/media/03_Video/Levels/level-004.webm"
+  },
+  "03_Video/Levels/level-005": {
+    "webp": "/media/03_Video/Levels/level-005.webp",
+    "mp4": "/media/03_Video/Levels/level-005.mp4",
+    "webm": "/media/03_Video/Levels/level-005.webm"
+  },
+  "03_Video/Trailer/trailer-poster": {
+    "webp": "/media/03_Video/Trailer/trailer-poster.webp"
+  },
+  "03_Video/Press-Footage/footage-20261113-142515": {
+    "mp4": "/media/03_Video/Press-Footage/footage-20261113-142515.mp4"
+  },
+  "04_Images/BeforeAfter/moment-1-before": {
+    "webp": "/media/04_Images/BeforeAfter/moment-1-before.webp"
+  },
+  "04_Images/BeforeAfter/moment-1-after": {
+    "webp": "/media/04_Images/BeforeAfter/moment-1-after.webp"
+  },
+  "04_Images/BeforeAfter/moment-2-before": {
+    "webp": "/media/04_Images/BeforeAfter/moment-2-before.webp"
+  },
+  "04_Images/BeforeAfter/moment-2-after": {
+    "webp": "/media/04_Images/BeforeAfter/moment-2-after.webp"
+  },
+  "04_Images/BeforeAfter/moment-3-before": {
+    "webp": "/media/04_Images/BeforeAfter/moment-3-before.webp"
+  },
+  "04_Images/BeforeAfter/moment-3-after": {
+    "webp": "/media/04_Images/BeforeAfter/moment-3-after.webp"
+  },
+  "04_Images/BeforeAfter/moment-4-before": {
+    "webp": "/media/04_Images/BeforeAfter/moment-4-before.webp"
+  },
+  "04_Images/BeforeAfter/moment-4-after": {
+    "webp": "/media/04_Images/BeforeAfter/moment-4-after.webp"
+  },
+  "04_Images/BeforeAfter/moment-5-before": {
+    "webp": "/media/04_Images/BeforeAfter/moment-5-before.webp"
+  },
+  "04_Images/BeforeAfter/moment-5-after": {
+    "webp": "/media/04_Images/BeforeAfter/moment-5-after.webp"
+  },
+  "04_Images/World/world-1": {
+    "webp": "/media/04_Images/World/world-1.webp"
+  },
+  "04_Images/World/world-3": {
+    "webp": "/media/04_Images/World/world-3.webp"
+  },
+  "04_Images/World/world-2": {
+    "webp": "/media/04_Images/World/world-2.webp"
+  },
+  "04_Images/Screenshots/screen-01": {
+    "webp": "/media/04_Images/Screenshots/screen-01.webp"
+  },
+  "04_Images/Screenshots/screen-02": {
+    "webp": "/media/04_Images/Screenshots/screen-02.webp"
+  },
+  "04_Images/Screenshots/screen-03": {
+    "webp": "/media/04_Images/Screenshots/screen-03.webp"
+  },
+  "04_Images/Showcase/showcase-01": {
+    "webp": "/media/04_Images/Showcase/showcase-01.webp"
+  },
+  "04_Images/Showcase/block-2-tablet": {
+    "webp": "/media/04_Images/Showcase/block-2-tablet.webp"
+  },
+  "04_Images/Showcase/block-1-phone": {
+    "webp": "/media/04_Images/Showcase/block-1-phone.webp"
+  },
+  "04_Images/Showcase/showcase-02": {
+    "webp": "/media/04_Images/Showcase/showcase-02.webp"
+  },
+  "04_Images/Showcase/block-3-tall": {
+    "webp": "/media/04_Images/Showcase/block-3-tall.webp"
+  },
+  "04_Images/Showcase/showcase-03": {
+    "webp": "/media/04_Images/Showcase/showcase-03.webp"
+  },
+  "04_Images/Showcase/showcase-04": {
+    "webp": "/media/04_Images/Showcase/showcase-04.webp"
+  },
+  "04_Images/Showcase/showcase-05": {
+    "webp": "/media/04_Images/Showcase/showcase-05.webp"
+  },
+  "04_Images/News/news-announcing-the-game": {
+    "webp": "/media/04_Images/News/news-announcing-the-game.webp"
+  },
+  "04_Images/News/news-how-a-level-is-made": {
+    "webp": "/media/04_Images/News/news-how-a-level-is-made.webp"
+  },
+  "04_Images/News/news-why-it-feels-satisfying": {
+    "webp": "/media/04_Images/News/news-why-it-feels-satisfying.webp"
+  }
+}
