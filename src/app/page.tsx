@@ -15,13 +15,14 @@ import { TrailerPlayer } from '@/components/Trailer';
 import { Signup } from '@/components/Signup';
 import { TrackedLink } from '@/components/TrackedLink';
 import { PlayIcon } from '@/components/Icons';
-import { vid, img } from '@/content/assets';
+import { vid, img, vec } from '@/content/assets';
 
 const stepKey = (n: number, id: string) => `03_Video/Steps/step-${n}-${id.toLowerCase()}`;
 const stepMedia = (n: number, id: string, title: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${title}: gameplay clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
 const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop: making a pizza in the Pizza House', ratio: '9/16', spec: '1080×1920 loop' };
 
 export default function Home() {
+  const heroLogo = vec('01_Brand/logo-light');
   const jsonLd = {
     '@context': 'https://schema.org', '@type': 'VideoGame', name: site.gameName, description: site.description, url: site.url,
     genre: ['Cooking', 'Simulation', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
@@ -36,7 +37,10 @@ export default function Home() {
       <section className="hero" aria-labelledby="hero-title">
         <div className="wrap hero-grid">
           <div className="hero-copy">
-            <h1 id="hero-title">{site.gameName}</h1>
+            <h1 id="hero-title" className={heroLogo ? 'hero-logo' : undefined}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {heroLogo ? <img src={heroLogo} alt={site.gameName} width={960} height={960} fetchPriority="high" /> : site.gameName}
+            </h1>
             <p className="tagline">{site.tagline}</p>
             <p className="release">{site.releaseLabel}</p>
           </div>

@@ -8,6 +8,9 @@
   "01_Brand/logo-light": {
     "webp": "/media/01_Brand/logo-light.webp"
   },
+  "01_Brand/mark": {
+    "webp": "/media/01_Brand/mark.webp"
+  },
   "02_KeyArt/keyart-landscape": {
     "webp": "/media/02_KeyArt/keyart-landscape.webp"
   },
@@ -44,6 +47,9 @@
   },
   "03_Video/Hero/level-003": {
     "mp4": "/media/03_Video/Hero/level-003.mp4"
+  },
+  "03_Video/Hero/level-004": {
+    "mp4": "/media/03_Video/Hero/level-004.mp4"
   },
   "03_Video/Steps/step-1-discover": {
     "mp4": "/media/03_Video/Steps/step-1-discover.mp4",
