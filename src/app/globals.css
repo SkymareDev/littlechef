@@ -412,3 +412,38 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 :root { --font-display: 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', cursive; --font-body: 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', cursive; --font-game: 'Comic Sans MS', 'Comic Neue', cursive; }
 h1, h2, h3, .wordmark, .hero h1, .hero .tagline, .sc-logo-mark { letter-spacing: 0; }
 body { font-weight: 400; }
+
+/* ---------- Game look: social buttons (round button sprite + white glyph) ---------- */
+.socials { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.social, .hero-social .social, .c-card .social, .sc-studio .social {
+  --edge: #b5600f; display: inline-flex; align-items: center; gap: 8px; min-height: 0; padding: 0; background: none; border-radius: 0;
+  color: var(--ink); text-decoration: none; font: 700 var(--t-sm)/1 var(--font-game);
+}
+.social[aria-disabled="true"] { opacity: 1; cursor: default; }
+.social-ico {
+  --h: 46px; width: var(--h); height: var(--h); flex: none; display: grid; place-items: center; color: #fff; padding-bottom: 4px;
+  border: 0 solid transparent; border-image: url('/ui/btn-yellow.png') 80 92 92 92 fill / calc(var(--h) * .44) calc(var(--h) * .5) calc(var(--h) * .5) calc(var(--h) * .5) stretch;
+  transition: transform .18s var(--ease-snap), filter .18s;
+}
+.social-ico svg { width: 20px; height: 20px; filter: drop-shadow(0 2px 0 var(--edge)) drop-shadow(1px 0 0 var(--edge)) drop-shadow(-1px 0 0 var(--edge)); }
+a.social:hover .social-ico { transform: translateY(-2px); filter: brightness(1.06); }
+a.social:active .social-ico { transform: translateY(2px) scale(.96); }
+.social[aria-disabled="true"] .social-ico { filter: saturate(.75); }
+.social-label { padding-right: 6px; }
+.social-label small { font: 700 10px/1 var(--font-game); text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); margin-left: 2px; }
+.sc-studio .social { color: var(--mist); }
+
+/* ---------- Game look: phone frame (yellow button body, brown outline, chunky 3D base, chef hat) ---------- */
+.phone, :root[data-theme="dark"] .phone {
+  background: linear-gradient(180deg, #FFE08A 0%, #F9C64E 55%, #F2A63A 100%);
+  border: 4px solid #6B3A17; padding: 12px;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .55), 0 9px 0 #B5600F, 0 9px 0 4px #6B3A17, 0 26px 50px rgba(0, 0, 0, .38);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phone { background: linear-gradient(180deg, #FFE08A 0%, #F9C64E 55%, #F2A63A 100%); } }
+.phone-screen { border: 3px solid #6B3A17; border-radius: calc(var(--r-device) - 14px); background: #FFF6E6; }
+.phone::before { content: ""; position: absolute; top: 4px; left: 50%; width: 64px; height: 6px; margin-left: -32px; border-radius: 99px; background: #B5600F; opacity: .55; z-index: 2; }
+.hero-visual .phone::after { content: ""; position: absolute; top: -58px; right: -42px; width: 118px; height: 116px; background: url('/ui/chef-hat.png') center / contain no-repeat; transform: rotate(14deg); z-index: 3; pointer-events: none; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+/* Video is 9:16; the frame crops the game's empty floor strip at the bottom instead of the sides. */
+.hero-visual .phone { aspect-ratio: 9/14.2 !important; }
+@media (min-width: 900px) { .hero-visual .phone { width: min(350px, 82vw); } }
+.hero-visual .phone-screen video, .hero-visual .phone-screen img { object-fit: cover; object-position: 50% 0%; }
