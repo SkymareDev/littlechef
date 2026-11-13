@@ -475,3 +475,47 @@ main > .wrap { background: color-mix(in srgb, #FFFDF6 92%, transparent); border-
 main > .wrap + .wrap { margin-top: 0; }
 main > .wrap .page-head, main > .page-head.wrap { padding-top: 0; }
 @media (max-width: 700px) { main > .wrap { border-radius: 20px; margin-inline: 10px; } }
+
+/* ---------- v4: smoother scene edges, softer grass, game-style boards so content stands out ---------- */
+/* Grass is drawn on a pseudo-layer so it can be softened without touching the content above it. */
+main { position: relative; isolation: isolate; background: #EFEBC4; }
+main::before { content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none;
+  background: url('/ui/grass-tile.webp') repeat center top / 960px auto; opacity: .62; filter: saturate(.78) brightness(1.03); }
+@media (max-width: 700px) { main::before { background-size: 620px auto; } }
+
+/* Scenes melt into the grass instead of stopping at a hard line. */
+.hero-scene .scene-bg { -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 220px), transparent 100%); mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 220px), transparent 100%); }
+.hero-scene { padding-bottom: calc(var(--s-8) + 60px); }
+.final-scene .scene-bg { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 220px, #000 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 220px, #000 100%); }
+.final-scene .scene-bg::after {
+  background:
+    linear-gradient(to bottom, transparent 70%, var(--mist) 100%),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--mist) 82%, transparent) 0%, color-mix(in srgb, var(--mist) 55%, transparent) 55%, color-mix(in srgb, var(--mist) 30%, transparent) 100%);
+}
+.final-scene { padding-top: calc(var(--s-8) * 1.4 + 80px); }
+
+/* The flat-colour sections no longer need their own wash: the boards carry the contrast. */
+main > section[style*="--paper"] { background: transparent !important; }
+
+/* Game-style boards: cream fill, brown outline, chunky bottom edge (like the in-game order paper). */
+:root { --board: #FFFDF6; --board-line: #8A5A2B; --board-edge: #E2C493; }
+.level-card, .c-card, .post, .step > div, .world figure, main > .wrap {
+  background: var(--board) !important; border: 3px solid var(--board-line); border-radius: 22px;
+  box-shadow: 0 6px 0 var(--board-edge), 0 6px 0 3px var(--board-line), 0 18px 34px rgba(70, 55, 0, .22) !important;
+}
+.level-card { padding: 10px 10px var(--s-4); }
+.post { padding: 10px 10px var(--s-4); }
+.step > div { padding: var(--s-4); margin-top: var(--s-3); }
+.world figure { padding: 10px 10px var(--s-4); }
+.world figcaption { background: none !important; box-shadow: none !important; padding: var(--s-2) 8px 0 !important; margin: 0 !important; }
+/* Transparent character / dish / house art sits on a warm spotlight instead of the placeholder stripes. */
+.world .media { background: radial-gradient(circle at 50% 58%, #FFF4D6 0%, #F7E3B4 70%, #EFD39B 100%); border-radius: 14px; }
+/* Media inside boards gets a thin outline so screenshots read as framed. */
+.level-card .media, .post .media, .step .media { border: 2px solid rgba(138, 90, 43, .45); }
+.step .media { box-shadow: 0 6px 0 var(--board-edge), 0 6px 0 2px rgba(138, 90, 43, .45); }
+/* Section headings get a cream ribbon so they never sit on bare grass. */
+main > section:not(.hero-scene):not(.final-scene) h2:not(.sr-only) {
+  display: inline-block; background: var(--board); padding: 6px 18px 8px; border-radius: 16px; border: 3px solid var(--board-line);
+  box-shadow: 0 5px 0 var(--board-edge), 0 5px 0 3px var(--board-line); text-shadow: none !important;
+}
+main > section:not(.hero-scene):not(.final-scene) .lede { background: color-mix(in srgb, var(--board) 90%, transparent); padding: 8px 14px; border-radius: 12px; display: inline-block; }
