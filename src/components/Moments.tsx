@@ -11,8 +11,8 @@ export function Moments({ moments }: { moments: Moment[] }) {
   return (
     <div className="moments">
       <div>
-        <h2 id="moments-title">From “ugh” to “ahh”</h2>
-        <p className="lede">Drag across the picture to see one moment change.</p>
+        <h2 id="moments-title">From dough to done</h2>
+        <p className="lede">Pick a step, then drag across the picture to watch a Cheese Pizza come together.</p>
         <div className="pairs" role="group" aria-label="Choose a moment">
           {moments.map((x, i) => (
             <button key={x.id} className="pair" aria-pressed={i === active} onClick={() => { setActive(i); setPos(50); }}>

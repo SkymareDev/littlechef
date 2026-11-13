@@ -3,7 +3,7 @@ import { site } from '@/content/site';
 
 /** Per-page metadata with consistent Open Graph + X card defaults. */
 export function pageMeta(opts: { title?: string; description?: string; path?: string; image?: string } = {}): Metadata {
-  const title = opts.title ? `${opts.title} | ${site.gameName}` : `${site.gameName} | A satisfying mobile puzzle game`;
+  const title = opts.title ? `${opts.title} | ${site.gameName}` : `${site.gameName} | A cosy restaurant cooking game`;
   const description = opts.description ?? site.description;
   const url = new URL(opts.path ?? '/', site.url).toString();
   const image = opts.image ?? '/og/og-default.png';

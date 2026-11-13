@@ -15,7 +15,7 @@ export function Footer() {
             <div style={{ marginTop: 16 }}><SocialLinks placement="footer" compact /></div>
           </div>
           <div><h3>Game</h3><ul>
-            <li><Link href="/game/">Levels and world</Link></li>
+            <li><Link href="/game/">Restaurants and world</Link></li>
             <li><Link href="/#trailer">Trailer</Link></li>
             <li><a href={storeLinks.googlePlay ?? '/#notify'}>Google Play</a></li>
             <li><a href={storeLinks.appStore ?? '/#notify'}>App Store</a></li>

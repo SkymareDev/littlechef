@@ -10,10 +10,10 @@ export const site = {
   studio: 'Skymare Studio',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.example-game.com', // TBD
   /** Hero promise. Keep it to one short line. */
-  tagline: 'Every level is a little world waiting to be solved.',
+  tagline: 'Remember the order. Cook it right. Grow your restaurants.',
   /** ~150 characters, used for meta description and store-like summaries. */
   description:
-    'A relaxing, satisfying mobile puzzle game where every level is a new little situation to figure out. Tap, fix, tidy and watch it all click into place.',
+    'A cosy cooking game: remember each order, roll, fry, grill and top every dish, earn coins and tips, and open new restaurants.',
   /** 'coming-soon' shows pre-register / notify; 'live' shows Get it on / Download. */
   releaseState: 'coming-soon' as 'coming-soon' | 'live',
   releaseLabel: 'Coming soon to iOS and Android',

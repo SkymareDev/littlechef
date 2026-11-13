@@ -44,23 +44,23 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       <div className="levels-head">
         {heading}
         <div className="rail-controls">
-          <button className="icon-btn" onClick={() => go(-1)} disabled={pos.start} aria-label="Previous levels"><ArrowL /></button>
-          <button className="icon-btn" onClick={() => go(1)} disabled={pos.end} aria-label="Next levels"><ArrowR /></button>
+          <button className="icon-btn" onClick={() => go(-1)} disabled={pos.start} aria-label="Previous restaurants"><ArrowL /></button>
+          <button className="icon-btn" onClick={() => go(1)} disabled={pos.end} aria-label="Next restaurants"><ArrowR /></button>
         </div>
       </div>
-      <div className="rail" ref={rail} role="list" aria-label="Featured levels" tabIndex={0}>
+      <div className="rail" ref={rail} role="list" aria-label="Restaurants" tabIndex={0}>
         {levels.map((l) => (
           <article key={l.id} className="level-card" role="listitem" data-level={l.id}>
-            <Media media={l.media} label={`Level ${l.number} clip`} />
-            <p className="num">Level {String(l.number).padStart(2, '0')}</p>
+            <Media media={l.media} label={`${l.title} clip`} />
+            <p className="num">Restaurant {String(l.number).padStart(2, '0')}</p>
             <h3>{l.title}</h3>
             <p>{l.oneLiner}</p>
           </article>
         ))}
         <article className="level-card next" role="listitem">
           <span className="q" aria-hidden="true">?</span>
-          <h3>Level {String(levels.length + 1).padStart(2, '0')}</h3>
-          <p>Something new. You will have to play to find out.</p>
+          <h3>More on the way</h3>
+          <p>Bagel Café and more kitchens are being cooked up. Keep earning to unlock them.</p>
         </article>
       </div>
       {pos.size < 0.999 && (

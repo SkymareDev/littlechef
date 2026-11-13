@@ -18,13 +18,13 @@ import { PlayIcon } from '@/components/Icons';
 import { vid, img } from '@/content/assets';
 
 const stepKey = (n: number, id: string) => `03_Video/Steps/step-${n}-${id.toLowerCase()}`;
-const stepMedia = (n: number, id: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${id} step clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
-const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop', ratio: '9/16', spec: '1080×1920 loop' };
+const stepMedia = (n: number, id: string, title: string) => ({ kind: 'video' as const, src: vid(stepKey(n, id)), poster: img(stepKey(n, id)), alt: `${title}: gameplay clip`, ratio: '9/16', spec: '720×1280 loop, 3–5 s, ≤800 KB' });
+const heroLoop = { kind: 'video' as const, src: vid('03_Video/Hero/hero-loop'), poster: img('03_Video/Hero/hero-poster'), alt: 'Gameplay loop: making a pizza in the Pizza House', ratio: '9/16', spec: '1080×1920 loop' };
 
 export default function Home() {
   const jsonLd = {
     '@context': 'https://schema.org', '@type': 'VideoGame', name: site.gameName, description: site.description, url: site.url,
-    genre: ['Puzzle', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
+    genre: ['Cooking', 'Simulation', 'Casual'], gamePlatform: ['iOS', 'Android'], operatingSystem: 'iOS, Android', applicationCategory: 'Game',
     author: { '@type': 'Organization', name: site.studio }, publisher: { '@type': 'Organization', name: site.studio },
     ...(trailer.src || trailer.youtubeId ? { trailer: { '@type': 'VideoObject', name: `${site.gameName} trailer`, thumbnailUrl: trailer.poster, uploadDate: '2026-01-01' } } : {}),
   };
@@ -64,7 +64,7 @@ export default function Home() {
           <ol className="steps" style={{ listStyle: 'none', padding: 0 }}>
             {coreSteps.map((s, i) => (
               <li key={s.id} className="step">
-                <Media media={stepMedia(i + 1, s.title)} label={`${s.title} clip`} />
+                <Media media={stepMedia(i + 1, s.id, s.title)} label={`${s.title} clip`} />
                 <div><h3>{s.title}</h3><p>{s.line}</p></div>
               </li>
             ))}
@@ -72,12 +72,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 03 Every level is a new scenario */}
+      {/* 03 Restaurants */}
       <section className="section" aria-labelledby="levels-title" style={{ background: 'var(--paper)' }}>
         <div className="wrap">
           <LevelRail levels={levels} heading={
-            <div><h2 id="levels-title">Every level is a new little situation</h2>
-              <p className="lede">No two levels play the same. Each one sets up a problem, lets you find the trick, and pays it off.</p></div>
+            <div><h2 id="levels-title">A new restaurant, a new kitchen</h2>
+              <p className="lede">Start with pizza, then unlock fried chicken, hot dogs, burgers, steak and more. Every house has its own ingredients, tools and tricks.</p></div>
           } />
         </div>
       </section>
@@ -91,7 +91,7 @@ export default function Home() {
       {world.length > 0 && (
         <section className="section" aria-labelledby="world-title" style={{ paddingTop: 0 }}>
           <div className="wrap">
-            <h2 id="world-title">A small world with a lot going on</h2>
+            <h2 id="world-title">Welcome to the kitchen</h2>
             <div className="world">
               {world.map((w) => (
                 <figure key={w.id} style={{ margin: 0 }}>
@@ -116,18 +116,18 @@ export default function Home() {
       <section className="section" aria-labelledby="community-title" style={{ background: 'var(--paper)' }}>
         <div className="wrap">
           <h2 id="community-title">Join the community</h2>
-          <p className="lede">Share your best solves, vote on favourite levels and see what other players made.</p>
+          <p className="lede">Share your best dishes, vote for your favourite restaurant and see what other chefs cooked up.</p>
           <div className="community">
             <div className="c-card wide" id="notify">
               <h3>Be first to play</h3>
-              <p className="muted">One email on launch day, plus the occasional new level preview.</p>
+              <p className="muted">One email on launch day, plus the occasional sneak peek at a new restaurant.</p>
               <Signup placement="home" />
               <SocialLinks placement="community" />
             </div>
             <div className="c-card">
               <span className="badge">Opens at launch</span>
               <h3>Weekly challenge</h3>
-              <p className="muted">Solve a featured level your own way and post it with the game’s tag.</p>
+              <p className="muted">Cook the featured order, beat your best tip and post it with the game’s tag.</p>
             </div>
             <div className="c-card wide">
               <span className="badge">Opens at launch</span>
@@ -136,8 +136,8 @@ export default function Home() {
             </div>
             <div className="c-card">
               <span className="badge">Opens at launch</span>
-              <h3>Favourite level poll</h3>
-              <p className="muted">Pick the level that made you grin.</p>
+              <h3>Favourite restaurant poll</h3>
+              <p className="muted">Pizza, fried chicken, burgers or steak? Pick the kitchen you love most.</p>
             </div>
           </div>
           <p style={{ marginTop: 32 }}><TrackedLink href="/community/" event="community_click" props={{ placement: 'home' }} className="btn btn-quiet">See the community page</TrackedLink></p>
@@ -166,7 +166,7 @@ export default function Home() {
       {/* 10 Final CTA */}
       <section className="section final" aria-labelledby="final-title" style={{ background: 'var(--paper)' }}>
         <div className="wrap">
-          <h2 id="final-title">Ready for the next level?</h2>
+          <h2 id="final-title">Ready to open your first restaurant?</h2>
           <p className="lede" style={{ marginInline: 'auto' }}>{site.releaseLabel}.</p>
           <StoreButtons placement="final" />
         </div>

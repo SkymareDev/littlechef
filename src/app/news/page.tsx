@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import { sortedNews } from '@/content/news';
 import { Media } from '@/components/Media';
 
-export const metadata = pageMeta({ title: 'News and devlog', description: 'Game updates, new levels and behind-the-scenes notes from the team.', path: '/news/' });
+export const metadata = pageMeta({ title: 'News and devlog', description: 'Game updates, new restaurants and behind-the-scenes notes from the kitchen.', path: '/news/' });
 const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 export default function News() {
