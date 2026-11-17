@@ -116,7 +116,7 @@ export default function Home() {
           <div className="community">
             <div className="c-card wide" id="notify">
               <h3>Get the news</h3>
-              <p className="muted">One email when Little Chef lands on the App Store, plus the occasional sneak peek at a new restaurant.</p>
+              <p className="muted">One email when a new restaurant opens, plus the occasional sneak peek behind the scenes.</p>
               <Signup placement="home" />
               <SocialLinks placement="community" />
             </div>

@@ -18,7 +18,7 @@ export const site = {
     'A cosy cooking game: remember each order, roll, fry, grill and top every dish, earn coins and tips, and open new restaurants.',
   /** 'coming-soon' shows pre-register / notify; 'live' shows Get it on / Download. */
   releaseState: 'live' as 'coming-soon' | 'live',
-  releaseLabel: 'Out now on Google Play. Coming soon to iOS',
+  releaseLabel: 'Out now on Google Play and the App Store',
   contactEmail: 'tdifferentfc@gmail.com',
   pressEmail: 'press@example.com',             // TBD
   supportEmail: 'tdifferentfc@gmail.com',
@@ -27,7 +27,7 @@ export const site = {
 
 export const storeLinks = {
   googlePlay: 'https://play.google.com/store/apps/details?id=com.fc.p.ta.little.chef.cooking.master' as string | null,
-  appStore: null as string | null,    // TBD: App Store listing / pre-order URL
+  appStore: 'https://apps.apple.com/us/app/little-chef-lets-cook/id6832906748' as string | null,
 };
 
 export const trailer = {

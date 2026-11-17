@@ -26,7 +26,7 @@ export const pressFacts = [
   ['Genre', 'Casual cooking, restaurant simulation'],
   ['Platforms', 'iOS, Android'],
   ['Art style', '2D stylized, bright and glossy food'],
-  ['Release', 'Android: out now on Google Play. iOS: TBD'],
+  ['Release', 'Out now on Google Play and the App Store'],
   ['Price', 'Free to download'],
   ['Languages', 'English (more TBD)'],
 ] as const;
