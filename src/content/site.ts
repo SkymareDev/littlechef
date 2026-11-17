@@ -44,6 +44,6 @@ export const socialLinks: SocialLink[] = [
   { key: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@little-chef-net' },
   { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/littlechef.net' },
   { key: 'x', label: 'X', href: 'https://x.com/littlechef2026' },
-  { key: 'telegram', label: 'Telegram', href: null },
-  // Discord is hidden until someone runs a server; add it back here with its invite link.
+  // Telegram and Discord are hidden until they have a channel or server; add them back here with their links
+  // ({ key: 'telegram', label: 'Telegram', href: 'https://t.me/…' }, { key: 'discord', label: 'Discord', href: '…' }).
 ];
