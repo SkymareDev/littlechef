@@ -8,6 +8,8 @@ import { vid, img } from './assets';
 export const site = {
   gameName: 'Little Chef',
   studio: 'Skymare Studio',
+  /** Legal entity responsible for the game and player data (privacy policy, store listings). */
+  legalName: 'Think Different FC',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.example-game.com', // TBD
   /** Hero promise. Keep it to one short line. */
   tagline: 'Remember the order. Cook it right. Grow your restaurants.',
@@ -17,9 +19,9 @@ export const site = {
   /** 'coming-soon' shows pre-register / notify; 'live' shows Get it on / Download. */
   releaseState: 'live' as 'coming-soon' | 'live',
   releaseLabel: 'Out now on Google Play. Coming soon to iOS',
-  contactEmail: 'hello@example.com',           // TBD
+  contactEmail: 'tdifferentfc@gmail.com',
   pressEmail: 'press@example.com',             // TBD
-  supportEmail: 'support@example.com',         // TBD
+  supportEmail: 'tdifferentfc@gmail.com',
   locale: 'en_US',
 };
 
