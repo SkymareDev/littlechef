@@ -1,48 +1,177 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Level } from '@/content/types';
 import { Media } from './Media';
 import { ArrowL, ArrowR } from './Icons';
 import { track } from '@/lib/analytics';
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mod = (a: number, n: number) => ((a % n) + n) % n;
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-/** After a mouse drag (snap is off while dragging), glide to the nearest card, then turn snap back on. */
-function settle(el: HTMLElement, fling: number) {
-  const max = el.scrollWidth - el.clientWidth;
-  const pad = parseFloat(getComputedStyle(el).scrollPaddingInlineStart) || 0;
-  const base = el.getBoundingClientRect().left;
-  const stops = Array.from(el.children as HTMLCollectionOf<HTMLElement>)
-    .map((c) => Math.min(max, Math.max(0, el.scrollLeft + c.getBoundingClientRect().left - base - pad)));
-  const aim = el.scrollLeft + Math.max(-el.clientWidth, Math.min(el.clientWidth, fling));
-  const left = stops.reduce((a, b) => (Math.abs(b - aim) < Math.abs(a - aim) ? b : a), stops[0] ?? 0);
-  const done = () => { if (!el.dataset.drag) el.classList.remove('is-dragging'); };
-  if (Math.abs(left - el.scrollLeft) < 1 || reducedMotion()) { el.scrollLeft = left; done(); return; }
-  el.scrollTo({ left, behavior: 'smooth' });
-  const finish = () => { window.clearTimeout(timer); el.removeEventListener('scrollend', finish); done(); };
-  const timer = window.setTimeout(finish, 700);
-  el.addEventListener('scrollend', finish);
-}
-
+/**
+ * Endless restaurant carousel. Cards stay in normal grid flow (so the rail keeps its height) and each one is
+ * shifted with a transform so the row wraps around. Drag, flick, wheel, keys, buttons and the bar all move one
+ * offset; a critically damped spring carries the release velocity into the nearest card.
+ */
 export function LevelRail({ levels, heading }: { levels: Level[]; heading: React.ReactNode }) {
   const rail = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLDivElement>(null);
+  const thumbA = useRef<HTMLSpanElement>(null);
+  const thumbB = useRef<HTMLSpanElement>(null);
+  const goRef = useRef<(n: number) => void>(() => {});
   const seen = useRef(new Set<string>());
-  const [pos, setPos] = useState({ start: true, end: false, size: 1, offset: 0 });
+  const s = useRef({ offset: 0, vel: 0, target: 0, step: 0, total: 0, view: 0, raf: 0, last: 0 }).current;
+  const [copies, setCopies] = useState(1);
 
-  const measure = useCallback(() => {
-    const el = rail.current; if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    const size = el.scrollWidth ? el.clientWidth / el.scrollWidth : 1;
-    const ratio = max > 0 ? el.scrollLeft / max : 0;
-    setPos({ start: el.scrollLeft <= 2, end: el.scrollLeft >= max - 2, size, offset: ratio * (1 - size) });
-  }, []);
+  useEffect(() => {
+    const el = rail.current, b = bar.current; if (!el) return;
+    const cards = () => Array.from(el.children) as HTMLElement[];
+    const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const snap = (o: number) => (s.step ? Math.round(o / s.step) * s.step : o);
+
+    const paint = () => {
+      const { step, total } = s; if (!step || !total) return;
+      const off = mod(s.offset, total);
+      cards().forEach((c, i) => { c.style.transform = `translate3d(${mod(i * step - off + step, total) - step - i * step}px,0,0)`; });
+      const size = Math.min(1, s.view / total), start = off / total, spill = start + size - 1;
+      if (thumbA.current) { thumbA.current.style.left = `${start * 100}%`; thumbA.current.style.width = `${Math.min(size, 1 - start) * 100}%`; }
+      if (thumbB.current) thumbB.current.style.width = `${Math.max(0, spill) * 100}%`;
+    };
+
+    const tick = (t: number) => {
+      const dt = s.last ? Math.min(0.034, (t - s.last) / 1000) : 1 / 60; s.last = t;
+      const k = 190, c = 2 * Math.sqrt(k);
+      s.vel += (-k * (s.offset - s.target) - c * s.vel) * dt;
+      s.offset += s.vel * dt;
+      if (Math.abs(s.offset - s.target) < 0.25 && Math.abs(s.vel) < 6) { s.offset = s.target; s.vel = 0; s.raf = 0; paint(); return; }
+      paint(); s.raf = requestAnimationFrame(tick);
+    };
+    const animate = () => {
+      if (reduce()) { cancelAnimationFrame(s.raf); s.raf = 0; s.offset = s.target; s.vel = 0; paint(); return; }
+      if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(tick); }
+    };
+    const halt = () => { cancelAnimationFrame(s.raf); s.raf = 0; };
+
+    const measure = () => {
+      const list = cards(); if (list.length < 2) return;
+      const step = list[1].offsetLeft - list[0].offsetLeft; if (step <= 0) return;
+      const index = s.step ? Math.round(s.target / s.step) : 0;
+      s.step = step; s.total = step * list.length; s.view = el.clientWidth;
+      halt(); s.offset = s.target = index * step; s.vel = 0;
+      const perCopy = list.length / copies;
+      const need = Math.max(1, Math.ceil((s.view + 2 * step) / (perCopy * step)));
+      if (need !== copies) setCopies(need);
+      paint();
+    };
+
+    goRef.current = (n: number) => { s.target = snap(s.target) + n * s.step; animate(); };
+
+    // Drag and flick: mouse, pen and touch. touch-action: pan-y leaves vertical swipes to the page.
+    let pid = -1, x0 = 0, y0 = 0, o0 = 0, lastX = 0, lastT = 0, v = 0, moved = false, swallow = false;
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      pid = e.pointerId; x0 = lastX = e.clientX; y0 = e.clientY; lastT = e.timeStamp; v = 0; moved = false;
+      halt(); s.vel = 0; o0 = s.offset;
+    };
+    const move = (e: PointerEvent) => {
+      if (e.pointerId !== pid) return;
+      const dx = e.clientX - x0;
+      if (!moved) {
+        if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - y0)) return;
+        moved = true; el.classList.add('is-dragging'); el.setPointerCapture(pid);
+      }
+      s.offset = s.target = o0 - dx;
+      const dt = (e.timeStamp - lastT) / 1000;
+      if (dt > 0) v = 0.75 * (-(e.clientX - lastX) / dt) + 0.25 * v;
+      lastX = e.clientX; lastT = e.timeStamp;
+      paint();
+    };
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== pid) return;
+      pid = -1; el.classList.remove('is-dragging');
+      if (!moved) { s.target = snap(s.target); animate(); return; }
+      swallow = true; window.setTimeout(() => { swallow = false; }, 0);
+      if (e.timeStamp - lastT > 70) v = 0;
+      s.vel = v;
+      s.target = snap(s.offset + clamp(v * 0.22, -s.view * 1.5, s.view * 1.5));
+      animate();
+    };
+    const click = (e: MouseEvent) => { if (swallow) { e.preventDefault(); e.stopPropagation(); } };
+    const noNativeDrag = (e: DragEvent) => e.preventDefault();
+
+    // Trackpad side-swipe and Shift + wheel. Plain vertical wheel keeps scrolling the page.
+    let wheelTimer = 0;
+    const wheel = (e: WheelEvent) => {
+      let d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
+      if (!d) return;
+      if (e.deltaMode === 1) d *= 40;
+      e.preventDefault(); halt(); s.vel = 0;
+      s.offset = s.target = s.offset + d; paint();
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(() => { s.target = snap(s.offset); animate(); }, 140);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); goRef.current(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); goRef.current(-1); }
+    };
+
+    // The bar: drag the thumb, or press the track to glide there and keep dragging.
+    let bid = -1, bx0 = 0, bo0 = 0, bMoved = false;
+    const barDown = (e: PointerEvent) => {
+      if (!b || (e.pointerType === 'mouse' && e.button !== 0) || !s.total) return;
+      e.preventDefault();
+      const r = b.getBoundingClientRect(); const size = Math.min(1, s.view / s.total);
+      const frac = (e.clientX - r.left) / r.width, start = mod(s.offset, s.total) / s.total;
+      bid = e.pointerId; bx0 = e.clientX; bMoved = false; b.setPointerCapture(bid); b.classList.add('is-active');
+      if (mod(frac - start, 1) <= size) { halt(); s.vel = 0; bo0 = s.offset; return; }
+      const want = (frac - size / 2) * s.total;
+      bo0 = s.offset + mod(want - mod(s.offset, s.total) + s.total / 2, s.total) - s.total / 2;
+      s.target = bo0; animate();
+    };
+    const barMove = (e: PointerEvent) => {
+      if (e.pointerId !== bid || !b) return;
+      bMoved = true; halt(); s.vel = 0;
+      s.offset = s.target = bo0 + ((e.clientX - bx0) / b.getBoundingClientRect().width) * s.total; paint();
+    };
+    const barUp = (e: PointerEvent) => {
+      if (e.pointerId !== bid || !b) return;
+      bid = -1; b.classList.remove('is-active');
+      s.target = snap(bMoved ? s.offset : s.target); animate();
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure); ro.observe(el);
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+    el.addEventListener('click', click, true);
+    el.addEventListener('dragstart', noNativeDrag);
+    el.addEventListener('wheel', wheel, { passive: false });
+    el.addEventListener('keydown', key);
+    b?.addEventListener('pointerdown', barDown);
+    b?.addEventListener('pointermove', barMove);
+    b?.addEventListener('pointerup', barUp);
+    b?.addEventListener('pointercancel', barUp);
+    return () => {
+      halt(); ro.disconnect(); window.clearTimeout(wheelTimer);
+      el.removeEventListener('pointerdown', down);
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      el.removeEventListener('pointercancel', up);
+      el.removeEventListener('click', click, true);
+      el.removeEventListener('dragstart', noNativeDrag);
+      el.removeEventListener('wheel', wheel);
+      el.removeEventListener('keydown', key);
+      b?.removeEventListener('pointerdown', barDown);
+      b?.removeEventListener('pointermove', barMove);
+      b?.removeEventListener('pointerup', barUp);
+      b?.removeEventListener('pointercancel', barUp);
+    };
+  }, [copies, levels.length, s]);
 
   useEffect(() => {
     const el = rail.current; if (!el) return;
-    measure();
-    el.addEventListener('scroll', measure, { passive: true });
-    window.addEventListener('resize', measure);
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         const id = (e.target as HTMLElement).dataset.level;
@@ -50,84 +179,13 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       }
     }, { root: el, threshold: 0.6 });
     el.querySelectorAll('[data-level]').forEach((c) => io.observe(c));
-    return () => { io.disconnect(); el.removeEventListener('scroll', measure); window.removeEventListener('resize', measure); };
-  }, [measure]);
+    return () => io.disconnect();
+  }, [copies]);
 
-  // Drag with the mouse. Touch and trackpads already scroll the rail natively, so only mouse pointers are handled here.
-  useEffect(() => {
-    const el = rail.current; if (!el) return;
-    let id = -1, x0 = 0, s0 = 0, lastX = 0, lastT = 0, v = 0, moved = false, swallowClick = false;
-    const down = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      id = e.pointerId; x0 = lastX = e.clientX; lastT = e.timeStamp; s0 = el.scrollLeft; v = 0; moved = false;
-    };
-    const move = (e: PointerEvent) => {
-      if (e.pointerId !== id) return;
-      const dx = e.clientX - x0;
-      if (!moved) {
-        if (Math.abs(dx) < 5) return;
-        moved = true; el.dataset.drag = '1'; el.classList.add('is-dragging'); el.setPointerCapture(id);
-      }
-      el.scrollLeft = s0 - dx;
-      const dt = e.timeStamp - lastT;
-      if (dt > 0) v = 0.8 * ((e.clientX - lastX) / dt) + 0.2 * v;
-      lastX = e.clientX; lastT = e.timeStamp;
-    };
-    const up = (e: PointerEvent) => {
-      if (e.pointerId !== id) return;
-      id = -1;
-      if (!moved) return;
-      swallowClick = true; window.setTimeout(() => { swallowClick = false; }, 0);
-      delete el.dataset.drag;
-      settle(el, e.timeStamp - lastT > 80 ? 0 : -v * 250);
-    };
-    const click = (e: MouseEvent) => { if (swallowClick) { e.preventDefault(); e.stopPropagation(); } };
-    const noNativeDrag = (e: DragEvent) => e.preventDefault();
-    el.addEventListener('pointerdown', down);
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerup', up);
-    el.addEventListener('pointercancel', up);
-    el.addEventListener('click', click, true);
-    el.addEventListener('dragstart', noNativeDrag);
-    return () => {
-      el.removeEventListener('pointerdown', down);
-      el.removeEventListener('pointermove', move);
-      el.removeEventListener('pointerup', up);
-      el.removeEventListener('pointercancel', up);
-      el.removeEventListener('click', click, true);
-      el.removeEventListener('dragstart', noNativeDrag);
-    };
-  }, []);
-
-  // The bar under the rail works as a scrollbar: drag the thumb, or click the track to jump there.
-  const scrub = (e: React.PointerEvent<HTMLDivElement>) => {
-    const el = rail.current, b = bar.current;
-    if (!el || !b || e.button !== 0) return;
-    e.preventDefault();
-    const r = b.getBoundingClientRect();
-    const max = el.scrollWidth - el.clientWidth;
-    const thumb = r.width * (el.clientWidth / el.scrollWidth);
-    const room = r.width - thumb;
-    if (max <= 0 || room <= 0) return;
-    const thumbLeft = r.left + (el.scrollLeft / max) * room;
-    const onThumb = e.clientX >= thumbLeft && e.clientX <= thumbLeft + thumb;
-    const grab = onThumb ? e.clientX - thumbLeft : thumb / 2;
-    const to = (cx: number) => { el.scrollLeft = ((cx - grab - r.left) / room) * max; };
-    el.dataset.drag = '1'; el.classList.add('is-dragging'); b.classList.add('is-active');
-    b.setPointerCapture(e.pointerId);
-    to(e.clientX);
-    const move = (ev: PointerEvent) => to(ev.clientX);
-    const end = () => {
-      b.removeEventListener('pointermove', move); b.removeEventListener('pointerup', end); b.removeEventListener('pointercancel', end);
-      b.classList.remove('is-active'); delete el.dataset.drag;
-      settle(el, 0);
-    };
-    b.addEventListener('pointermove', move); b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
-  };
-
-  const go = (dir: number) => {
-    const el = rail.current; if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth, behavior: reducedMotion() ? 'auto' : 'smooth' });
+  const page = (dir: number) => {
+    const el = rail.current, card = el?.children[1] as HTMLElement | undefined, first = el?.children[0] as HTMLElement | undefined;
+    const step = card && first ? card.offsetLeft - first.offsetLeft : 0;
+    goRef.current(dir * (el && step ? Math.max(1, Math.round(el.clientWidth / step)) : 1));
   };
 
   return (
@@ -135,32 +193,30 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       <div className="levels-head">
         {heading}
         <div className="rail-controls">
-          <button className="icon-btn" onClick={() => go(-1)} disabled={pos.start} aria-label="Previous restaurants"><ArrowL /></button>
-          <button className="icon-btn" onClick={() => go(1)} disabled={pos.end} aria-label="Next restaurants"><ArrowR /></button>
+          <button className="icon-btn" onClick={() => page(-1)} aria-label="Previous restaurants"><ArrowL /></button>
+          <button className="icon-btn" onClick={() => page(1)} aria-label="Next restaurants"><ArrowR /></button>
         </div>
       </div>
-      <div className="rail" ref={rail} role="list" aria-label="Restaurants" tabIndex={0}>
-        {levels.map((l) => (
-          <article key={l.id} className="level-card" role="listitem" data-level={l.id}>
-            <Media media={l.media} label={`${l.title} clip`} />
-            <p className="num">Restaurant {String(l.number).padStart(2, '0')}</p>
-            <h3>{l.title}</h3>
-            <p>{l.oneLiner}</p>
-          </article>
-        ))}
-        <article className="level-card next" role="listitem">
-          <span className="q" aria-hidden="true">?</span>
-          <h3>More on the way</h3>
-          <p>Bagel Café and more kitchens are being cooked up. Keep earning to unlock them.</p>
-        </article>
+      <div className="rail" ref={rail} role="list" aria-label="Restaurants" aria-roledescription="carousel" tabIndex={0}>
+        {Array.from({ length: copies }).flatMap((_, c) => [
+          ...levels.map((l) => (
+            <article key={`${c}-${l.id}`} className="level-card" role={c ? undefined : 'listitem'} aria-hidden={c ? true : undefined} data-level={c ? undefined : l.id}>
+              <Media media={l.media} label={`${l.title} clip`} />
+              <p className="num">Restaurant {String(l.number).padStart(2, '0')}</p>
+              <h3>{l.title}</h3>
+              <p>{l.oneLiner}</p>
+            </article>
+          )),
+          <article key={`${c}-next`} className="level-card next" role={c ? undefined : 'listitem'} aria-hidden={c ? true : undefined}>
+            <span className="q" aria-hidden="true">?</span>
+            <h3>More on the way</h3>
+            <p>Bagel Café and more kitchens are being cooked up. Keep earning to unlock them.</p>
+          </article>,
+        ])}
       </div>
-      {pos.size < 0.999 && (
-        <div className="rail-scrub" ref={bar} onPointerDown={scrub} aria-hidden="true">
-          <div className="rail-progress">
-            <span style={{ width: `${pos.size * 100}%`, transform: `translateX(${(pos.offset / pos.size) * 100}%)` }} />
-          </div>
-        </div>
-      )}
+      <div className="rail-scrub" ref={bar} aria-hidden="true">
+        <div className="rail-progress"><span ref={thumbA} /><span ref={thumbB} className="wrap" /></div>
+      </div>
     </>
   );
 }

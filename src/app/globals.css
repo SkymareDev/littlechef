@@ -146,16 +146,15 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .step p { color: var(--ink-soft); margin-top: 6px; }
 
 /* ===== Levels rail ===== */
-.rail { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: var(--s-4); overflow-x: auto;
-  scroll-snap-type: x mandatory; scroll-padding-inline: 8px; padding: var(--s-6) 8px var(--s-5); margin-inline: -8px;
-  scrollbar-width: none; overscroll-behavior-x: contain; }
-.rail::-webkit-scrollbar { display: none; }
+.rail { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: var(--s-4); overflow: hidden;
+  padding: var(--s-6) 8px var(--s-5); margin-inline: -8px; touch-action: pan-y; overscroll-behavior-x: contain; }
+.rail > .level-card { will-change: transform; backface-visibility: hidden; }
 @media (min-width: 640px) { .rail { grid-auto-columns: calc((100% - 2 * var(--s-4)) / 3); } }
 @media (min-width: 1000px) { .rail { gap: var(--s-5); grid-auto-columns: calc((100% - 3 * var(--s-5)) / 4); } }
 .level-card { display: flex; flex-direction: column; }
-.rail-progress { height: 4px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); overflow: hidden; }
-.rail-progress span { display: block; height: 100%; border-radius: inherit; background: color-mix(in srgb, currentColor 55%, transparent); transition: width .25s ease; }
-.rail.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.rail-progress { position: relative; height: 4px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); overflow: hidden; }
+.rail-progress span { position: absolute; top: 0; bottom: 0; left: 0; width: 0; border-radius: inherit; background: color-mix(in srgb, currentColor 55%, transparent); }
+.rail.is-dragging { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 @media (hover: hover) and (pointer: fine) { .rail:not(.is-dragging) { cursor: grab; } }
 .rail-scrub { padding-block: 10px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
 .rail-scrub .rail-progress { transition: transform .15s ease; }
