@@ -41,8 +41,8 @@ export const trailer = {
 export const socialLinks: SocialLink[] = [
   { key: 'tiktok', label: 'TikTok', href: null },
   { key: 'instagram', label: 'Instagram', href: null },
-  { key: 'youtube', label: 'YouTube', href: null },
-  { key: 'facebook', label: 'Facebook', href: null },
+  { key: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@little-chef-net' },
+  { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/littlechef.net' },
   { key: 'x', label: 'X', href: null },
   { key: 'discord', label: 'Discord', href: null },
 ];
