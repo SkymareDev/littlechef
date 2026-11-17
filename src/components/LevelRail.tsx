@@ -20,7 +20,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
   const thumbB = useRef<HTMLSpanElement>(null);
   const goRef = useRef<(n: number) => void>(() => {});
   const seen = useRef(new Set<string>());
-  const s = useRef({ offset: 0, vel: 0, target: 0, step: 0, total: 0, view: 0, raf: 0, last: 0 }).current;
+  const s = useRef({ offset: 0, vel: 0, target: 0, step: 0, total: 0, view: 0, raf: 0, last: 0, tau: 0 }).current;
   const [copies, setCopies] = useState(1);
 
   useEffect(() => {
@@ -40,13 +40,22 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
 
     const tick = (t: number) => {
       const dt = s.last ? Math.min(0.034, (t - s.last) / 1000) : 1 / 60; s.last = t;
-      const k = 190, c = 2 * Math.sqrt(k);
-      s.vel += (-k * (s.offset - s.target) - c * s.vel) * dt;
-      s.offset += s.vel * dt;
-      if (Math.abs(s.offset - s.target) < 0.25 && Math.abs(s.vel) < 6) { s.offset = s.target; s.vel = 0; s.raf = 0; paint(); return; }
+      let done: boolean;
+      if (s.tau > 0) {
+        // Glide: the gap to the target shrinks by the same share every moment, so the card slows evenly to a stop.
+        const rest = (s.target - s.offset) * Math.exp(-dt / s.tau);
+        s.offset = s.target - rest; done = Math.abs(rest) < 0.3;
+      } else {
+        const k = 190, c = 2 * Math.sqrt(k);
+        s.vel += (-k * (s.offset - s.target) - c * s.vel) * dt;
+        s.offset += s.vel * dt; done = Math.abs(s.offset - s.target) < 0.25 && Math.abs(s.vel) < 6;
+      }
+      if (done) { s.offset = s.target; s.vel = 0; s.raf = 0; paint(); return; }
       paint(); s.raf = requestAnimationFrame(tick);
     };
-    const animate = () => {
+    /** tau > 0: ease out over roughly 4 × tau seconds. tau = 0: spring that keeps the current s.vel. */
+    const animate = (tau = 0.2) => {
+      s.tau = tau;
       if (reduce()) { cancelAnimationFrame(s.raf); s.raf = 0; s.offset = s.target; s.vel = 0; paint(); return; }
       if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(tick); }
     };
@@ -64,13 +73,14 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       paint();
     };
 
-    goRef.current = (n: number) => { s.target = snap(s.target) + n * s.step; animate(); };
+    goRef.current = (n: number) => { s.target = snap(s.target) + n * s.step; animate(0.24); };
 
     // Drag and flick: mouse, pen and touch. touch-action: pan-y leaves vertical swipes to the page.
-    let pid = -1, x0 = 0, y0 = 0, o0 = 0, lastX = 0, lastT = 0, v = 0, moved = false, swallow = false;
+    let pid = -1, x0 = 0, y0 = 0, o0 = 0, moved = false, swallow = false;
+    let trail: [number, number][] = [];
     const down = (e: PointerEvent) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      pid = e.pointerId; x0 = lastX = e.clientX; y0 = e.clientY; lastT = e.timeStamp; v = 0; moved = false;
+      pid = e.pointerId; x0 = e.clientX; y0 = e.clientY; moved = false; trail = [[e.clientX, e.timeStamp]];
       halt(); s.vel = 0; o0 = s.offset;
     };
     const move = (e: PointerEvent) => {
@@ -81,20 +91,24 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
         moved = true; el.classList.add('is-dragging'); el.setPointerCapture(pid);
       }
       s.offset = s.target = o0 - dx;
-      const dt = (e.timeStamp - lastT) / 1000;
-      if (dt > 0) v = 0.75 * (-(e.clientX - lastX) / dt) + 0.25 * v;
-      lastX = e.clientX; lastT = e.timeStamp;
+      trail.push([e.clientX, e.timeStamp]);
+      while (trail.length > 2 && e.timeStamp - trail[0][1] > 100) trail.shift();
       paint();
     };
     const up = (e: PointerEvent) => {
       if (e.pointerId !== pid) return;
       pid = -1; el.classList.remove('is-dragging');
-      if (!moved) { s.target = snap(s.target); animate(); return; }
+      if (!moved) { s.target = snap(s.target); animate(0.2); return; }
       swallow = true; window.setTimeout(() => { swallow = false; }, 0);
-      if (e.timeStamp - lastT > 70) v = 0;
-      s.vel = v;
-      s.target = snap(s.offset + clamp(v * 0.22, -s.view * 1.5, s.view * 1.5));
-      animate();
+      // Release speed over the last ~100 ms; a pause before letting go means no flick.
+      const [fx, ft] = trail[0], [lx, lt] = trail[trail.length - 1];
+      const v = e.timeStamp - lt > 60 || lt - ft < 12 ? 0 : -((lx - fx) / (lt - ft)) * 1000;
+      if (Math.abs(v) < 300) { s.target = snap(s.offset); animate(0.2); return; }
+      // Flick: coast about 0.38 s worth of the release speed, land on a card edge, and glide there.
+      s.target = snap(s.offset + clamp(v * 0.38, -s.view * 2, s.view * 2));
+      const d = s.target - s.offset;
+      if (d * v > 0) animate(clamp(d / v, 0.2, 0.7));
+      else { s.vel = v; animate(0); }
     };
     const click = (e: MouseEvent) => { if (swallow) { e.preventDefault(); e.stopPropagation(); } };
     const noNativeDrag = (e: DragEvent) => e.preventDefault();
@@ -108,7 +122,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       e.preventDefault(); halt(); s.vel = 0;
       s.offset = s.target = s.offset + d; paint();
       window.clearTimeout(wheelTimer);
-      wheelTimer = window.setTimeout(() => { s.target = snap(s.offset); animate(); }, 140);
+      wheelTimer = window.setTimeout(() => { s.target = snap(s.offset); animate(0.2); }, 140);
     };
     const key = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') { e.preventDefault(); goRef.current(1); }
@@ -126,7 +140,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       if (mod(frac - start, 1) <= size) { halt(); s.vel = 0; bo0 = s.offset; return; }
       const want = (frac - size / 2) * s.total;
       bo0 = s.offset + mod(want - mod(s.offset, s.total) + s.total / 2, s.total) - s.total / 2;
-      s.target = bo0; animate();
+      s.target = bo0; animate(0.24);
     };
     const barMove = (e: PointerEvent) => {
       if (e.pointerId !== bid || !b) return;
@@ -136,7 +150,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
     const barUp = (e: PointerEvent) => {
       if (e.pointerId !== bid || !b) return;
       bid = -1; b.classList.remove('is-active');
-      s.target = snap(bMoved ? s.offset : s.target); animate();
+      s.target = snap(bMoved ? s.offset : s.target); animate(0.22);
     };
 
     measure();
