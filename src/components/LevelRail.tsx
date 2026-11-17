@@ -84,7 +84,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       }
       s.offset = s.target = o0 - dx;
       trail.push([e.clientX, e.timeStamp]);
-      while (trail.length > 2 && e.timeStamp - trail[0][1] > 100) trail.shift();
+      while (trail.length > 2 && e.timeStamp - trail[0][1] > 200) trail.shift();
       paint();
     };
     const up = (e: PointerEvent) => {
@@ -92,13 +92,30 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       pid = -1; el.classList.remove('is-dragging');
       if (!moved) return;
       swallow = true; window.setTimeout(() => { swallow = false; }, 0);
-      // Release speed over the last ~100 ms; a pause before letting go means it stays where the hand left it.
-      const [fx, ft] = trail[0], [lx, lt] = trail[trail.length - 1];
-      const v = e.timeStamp - lt > 60 || lt - ft < 12 ? 0 : -((lx - fx) / (lt - ft)) * 1000;
-      // Keep exactly that speed and let it fade out (about 1.5 s for a hard flick). Stops wherever it stops.
-      const glide = 0.4;
+      const v = releaseSpeed(e.timeStamp);
+      // Keep that speed and let it fade out (a hard flick drifts for about 1.5 s). Stops wherever it stops.
+      const glide = 0.45;
       s.target = s.offset + clamp(v * glide, -s.view * 3, s.view * 3);
       if (s.target !== s.offset) animate(glide);
+    };
+    /**
+     * Flick speed in offset px/s. A hand usually eases off in the last few frames before letting go, so take the
+     * fastest ~30 ms stretch of the last 200 ms and fade it by how long ago it happened. Holding still for
+     * 150 ms before letting go counts as no flick.
+     */
+    const releaseSpeed = (now: number) => {
+      if (trail.length < 2 || now - trail[trail.length - 1][1] > 150) return 0;
+      let best = 0;
+      for (let i = trail.length - 1, j = i; i > 0; i--) {
+        const [xi, ti] = trail[i];
+        while (j > 0 && ti - trail[j][1] < 30) j--;
+        const [xj, tj] = trail[j];
+        if (ti - tj < 8) continue;
+        const speed = (-(xi - xj) / (ti - tj)) * 1000 * Math.exp(-(now - ti) / 120);
+        if (Math.abs(speed) > Math.abs(best)) best = speed;
+        if (j === 0) break;
+      }
+      return best;
     };
     const click = (e: MouseEvent) => { if (swallow) { e.preventDefault(); e.stopPropagation(); } };
     const noNativeDrag = (e: DragEvent) => e.preventDefault();
