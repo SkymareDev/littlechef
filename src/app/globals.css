@@ -154,7 +154,14 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (min-width: 1000px) { .rail { gap: var(--s-5); grid-auto-columns: calc((100% - 3 * var(--s-5)) / 4); } }
 .level-card { display: flex; flex-direction: column; }
 .rail-progress { height: 4px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); overflow: hidden; }
-.rail-progress span { display: block; height: 100%; border-radius: inherit; background: color-mix(in srgb, currentColor 55%, transparent); transition: transform .25s var(--ease-snap, ease), width .25s ease; }
+.rail-progress span { display: block; height: 100%; border-radius: inherit; background: color-mix(in srgb, currentColor 55%, transparent); transition: width .25s ease; }
+.rail.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; -webkit-user-select: none; }
+@media (hover: hover) and (pointer: fine) { .rail:not(.is-dragging) { cursor: grab; } }
+.rail-scrub { padding-block: 10px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+.rail-scrub .rail-progress { transition: transform .15s ease; }
+.rail-scrub:hover .rail-progress, .rail-scrub.is-active .rail-progress { transform: scaleY(2); }
+.rail-scrub:hover span, .rail-scrub.is-active span { background: color-mix(in srgb, currentColor 75%, transparent); }
+.rail-scrub.is-active { cursor: grabbing; }
 .icon-btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
 .icon-btn:disabled:active { transform: none; }
 .levels-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s-4); }
@@ -504,6 +511,10 @@ main > section[style*="--paper"] { background: transparent !important; }
   box-shadow: 0 6px 0 var(--board-edge), 0 6px 0 3px var(--board-line), 0 18px 34px rgba(70, 55, 0, .22) !important;
 }
 .level-card { padding: 10px 10px var(--s-4); }
+/* The "more on the way" card was dark navy with light text; on the cream board it needs dark text again. */
+.level-card.next { background: radial-gradient(circle at 50% 40%, #FFF4D6 0%, #F7E3B4 75%, #EFD39B 100%) !important; color: var(--ink); }
+.level-card.next .q { color: var(--board-line); }
+.level-card.next p { color: var(--ink-soft); }
 .post { padding: 10px 10px var(--s-4); }
 .step > div { padding: var(--s-4); margin-top: var(--s-3); }
 .world figure { padding: 10px 10px var(--s-4); }
