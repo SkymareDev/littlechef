@@ -40,9 +40,10 @@ export const trailer = {
 
 export const socialLinks: SocialLink[] = [
   { key: 'tiktok', label: 'TikTok', href: 'https://www.tiktok.com/@little_chef.net' },
-  { key: 'instagram', label: 'Instagram', href: null },
+  { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/little_chef_net/' },
   { key: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@little-chef-net' },
   { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/littlechef.net' },
-  { key: 'x', label: 'X', href: null },
-  { key: 'discord', label: 'Discord', href: null },
+  { key: 'x', label: 'X', href: 'https://x.com/littlechef2026' },
+  { key: 'telegram', label: 'Telegram', href: null },
+  // Discord is hidden until someone runs a server; add it back here with its invite link.
 ];

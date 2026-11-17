@@ -35,7 +35,7 @@ export type NewsPost = {
   placeholder: boolean;
 };
 
-export type SocialKey = 'tiktok' | 'instagram' | 'youtube' | 'facebook' | 'x' | 'discord';
+export type SocialKey = 'tiktok' | 'instagram' | 'youtube' | 'facebook' | 'x' | 'telegram' | 'discord';
 export type SocialLink = { key: SocialKey; label: string; href: string | null };
 
 export type WorldItem = { id: string; name: string; note: string; media: Media; placeholder: boolean };
