@@ -5,43 +5,51 @@ import { Media } from './Media';
 import { ArrowL, ArrowR } from './Icons';
 import { track } from '@/lib/analytics';
 
-const mod = (a: number, n: number) => ((a % n) + n) % n;
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
 type Curve = { t0: number; x0: number; d: number; m0: number; T: number };
 
 /**
- * Endless restaurant carousel. Cards stay in normal grid flow (so the rail keeps its height) and each one is
- * shifted with a transform so the row wraps around. Drag, flick, wheel, keys, buttons and the bar all move one
- * offset. Letting go starts a curve at the hand's own speed that slows down and stops exactly on a card edge,
- * always a card in the direction of travel, so there is no jump in speed and no pull backwards.
+ * Restaurant carousel with a start and an end. Cards stay in normal grid flow (so the rail keeps its height) and
+ * are shifted together with a transform. Drag, flick, wheel, keys, buttons and the bar all move one offset.
+ * Letting go starts a curve at the hand's own speed that slows down and stops exactly on a card edge, always a
+ * card in the direction of travel; pulling past either end gives a little and springs back.
  */
 export function LevelRail({ levels, heading }: { levels: Level[]; heading: React.ReactNode }) {
   const rail = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLDivElement>(null);
-  const thumbA = useRef<HTMLSpanElement>(null);
-  const thumbB = useRef<HTMLSpanElement>(null);
+  const thumb = useRef<HTMLSpanElement>(null);
   const goRef = useRef<(n: number) => void>(() => {});
   const seen = useRef(new Set<string>());
   const s = useRef({
-    offset: 0, target: 0, vel: 0, step: 0, total: 0, view: 0, raf: 0, last: 0,
+    offset: 0, target: 0, vel: 0, step: 0, max: 0, view: 0, raf: 0, last: 0,
     mode: 'ease' as 'ease' | 'curve', tau: 0.1, curve: { t0: 0, x0: 0, d: 0, m0: 0, T: 1 } as Curve,
   }).current;
-  const [copies, setCopies] = useState(1);
+  const [edges, setEdges] = useState({ start: true, end: false, scrollable: true });
 
   useEffect(() => {
     const el = rail.current, b = bar.current; if (!el) return;
     const cards = () => Array.from(el.children) as HTMLElement[];
     const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const nearest = (o: number) => (s.step ? Math.round(o / s.step) * s.step : o);
 
+    /** Card edges the rail can rest on: every card start, and the very end. */
+    const stops = () => {
+      const out: number[] = [];
+      for (let x = 0; s.step > 0 && x < s.max - 1; x += s.step) out.push(x);
+      out.push(s.max);
+      return out;
+    };
+    const nearest = (o: number) => stops().reduce((a, c) => (Math.abs(c - o) < Math.abs(a - o) ? c : a), 0);
+
+    let shown = { start: true, end: false, scrollable: true };
     const paint = () => {
-      const { step, total } = s; if (!step || !total) return;
-      const off = mod(s.offset, total);
-      cards().forEach((c, i) => { c.style.transform = `translate3d(${mod(i * step - off + step, total) - step - i * step}px,0,0)`; });
-      const size = Math.min(1, s.view / total), start = off / total, spill = start + size - 1;
-      if (thumbA.current) { thumbA.current.style.left = `${start * 100}%`; thumbA.current.style.width = `${Math.min(size, 1 - start) * 100}%`; }
-      if (thumbB.current) thumbB.current.style.width = `${Math.max(0, spill) * 100}%`;
+      const x = -s.offset;
+      cards().forEach((c) => { c.style.transform = `translate3d(${x}px,0,0)`; });
+      const size = s.max > 0 ? s.view / (s.view + s.max) : 1;
+      const at = s.max > 0 ? clamp(s.offset / s.max, 0, 1) : 0;
+      if (thumb.current) { thumb.current.style.width = `${size * 100}%`; thumb.current.style.left = `${at * (1 - size) * 100}%`; }
+      const next = { start: s.offset <= 1, end: s.offset >= s.max - 1, scrollable: s.max > 1 };
+      if (next.start !== shown.start || next.end !== shown.end || next.scrollable !== shown.scrollable) { shown = next; setEdges(next); }
     };
 
     const tick = (t: number) => {
@@ -83,19 +91,22 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       const list = cards(); if (list.length < 2) return;
       const step = list[1].offsetLeft - list[0].offsetLeft; if (step <= 0) return;
       const index = s.step ? Math.round(s.target / s.step) : 0;
-      s.step = step; s.total = step * list.length; s.view = el.clientWidth;
-      halt(); s.offset = s.target = index * step;
-      const perCopy = list.length / copies;
-      const need = Math.max(1, Math.ceil((s.view + 2 * step) / (perCopy * step)));
-      if (need !== copies) setCopies(need);
+      s.step = step; s.view = el.clientWidth; s.max = Math.max(0, el.scrollWidth - el.clientWidth);
+      halt(); s.offset = s.target = nearest(clamp(index * step, 0, s.max));
       paint();
     };
 
-    goRef.current = (n: number) => glideTo(nearest(s.target) + n * s.step, s.vel);
+    goRef.current = (n: number) => {
+      const list = stops();
+      const i = list.indexOf(nearest(s.target));
+      glideTo(list[clamp(i + n, 0, list.length - 1)], s.vel);
+    };
 
     // Drag and flick: mouse, pen and touch. touch-action: pan-y leaves vertical swipes to the page.
     let pid = -1, x0 = 0, y0 = 0, o0 = 0, moved = false, swallow = false, mouse = false;
     let trail: [number, number][] = [];
+    /** Past either end the rail only gives a third as much, so it feels held. */
+    const resist = (raw: number) => (raw < 0 ? raw / 3 : raw > s.max ? s.max + (raw - s.max) / 3 : raw);
     const down = (e: PointerEvent) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       pid = e.pointerId; x0 = e.clientX; y0 = e.clientY; moved = false; mouse = e.pointerType === 'mouse';
@@ -109,7 +120,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
         if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - y0)) return;
         moved = true; el.classList.add('is-dragging'); el.setPointerCapture(pid);
       }
-      s.offset = s.target = o0 - dx;
+      s.offset = s.target = resist(o0 - dx);
       trail.push([e.clientX, e.timeStamp]);
       while (trail.length > 2 && e.timeStamp - trail[0][1] > 250) trail.shift();
       paint();
@@ -136,19 +147,19 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
     };
     /** The card to land on: where the glide would carry it, rounded on in the direction of travel. */
     const landing = (v: number, dragged: number) => {
-      const step = s.step;
-      const pos = s.offset / step;
-      const ahead = (s.offset + clamp(v * 0.45, -s.view * 3, s.view * 3)) / step;
-      const dir = Math.abs(v) > 250 ? Math.sign(v) : Math.abs(dragged) > 0.15 * step ? Math.sign(dragged) : 0;
-      if (dir > 0) return Math.max(Math.ceil(ahead - 0.1), Math.ceil(pos - 0.1)) * step;
-      if (dir < 0) return Math.min(Math.floor(ahead + 0.1), Math.floor(pos + 0.1)) * step;
-      return Math.round(pos) * step;
+      const list = stops(), slack = 0.1 * s.step;
+      const ahead = clamp(s.offset + clamp(v * 0.45, -s.view * 3, s.view * 3), 0, s.max);
+      const dir = Math.abs(v) > 250 ? Math.sign(v) : Math.abs(dragged) > 0.15 * s.step ? Math.sign(dragged) : 0;
+      if (dir > 0) return list.find((x) => x >= Math.max(ahead, Math.min(s.offset, s.max)) - slack) ?? s.max;
+      if (dir < 0) return [...list].reverse().find((x) => x <= Math.min(ahead, Math.max(s.offset, 0)) + slack) ?? 0;
+      return nearest(clamp(s.offset, 0, s.max));
     };
     const up = (e: PointerEvent) => {
       if (e.pointerId !== pid) return;
       pid = -1; el.classList.remove('is-dragging');
       if (moved) { swallow = true; window.setTimeout(() => { swallow = false; }, 0); }
-      const v = moved ? releaseSpeed(e.timeStamp) : 0;
+      const outside = s.offset < 0 || s.offset > s.max;
+      const v = moved && !outside ? releaseSpeed(e.timeStamp) : 0;
       glideTo(landing(v, moved ? s.offset - o0 : 0), v);
     };
     const click = (e: MouseEvent) => { if (swallow) { e.preventDefault(); e.stopPropagation(); } };
@@ -158,12 +169,13 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
     let wheelTimer = 0, wheelDir = 0;
     const wheel = (e: WheelEvent) => {
       let d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
-      if (!d) return;
+      if (!d || s.max <= 0) return;
       if (e.deltaMode === 1) d *= 40;
+      const at = s.mode === 'curve' && s.raf ? s.offset : s.target;
+      if ((d < 0 && at <= 0) || (d > 0 && at >= s.max)) return;
       e.preventDefault();
       wheelDir = Math.sign(d);
-      if (s.mode === 'curve') s.target = s.offset;
-      s.target += d; follow(0.1);
+      s.target = clamp(at + d, 0, s.max); follow(0.1);
       window.clearTimeout(wheelTimer);
       wheelTimer = window.setTimeout(() => glideTo(landing(s.vel, wheelDir * s.step), s.vel), 160);
     };
@@ -175,21 +187,21 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
     // The bar: drag the thumb, or press the track to glide there and keep dragging.
     let bid = -1, bx0 = 0, bo0 = 0, bMoved = false;
     const barDown = (e: PointerEvent) => {
-      if (!b || (e.pointerType === 'mouse' && e.button !== 0) || !s.total) return;
+      if (!b || (e.pointerType === 'mouse' && e.button !== 0) || s.max <= 0) return;
       e.preventDefault();
-      const r = b.getBoundingClientRect(); const size = Math.min(1, s.view / s.total);
-      const frac = (e.clientX - r.left) / r.width, start = mod(s.offset, s.total) / s.total;
+      const r = b.getBoundingClientRect(), size = s.view / (s.view + s.max);
+      const thumbLeft = r.left + (s.offset / s.max) * (1 - size) * r.width, thumbW = size * r.width;
       bid = e.pointerId; bx0 = e.clientX; bMoved = false; b.setPointerCapture(bid); b.classList.add('is-active');
-      if (mod(frac - start, 1) <= size) { halt(); bo0 = s.offset; return; }
-      const want = (frac - size / 2) * s.total;
-      bo0 = s.offset + mod(want - mod(s.offset, s.total) + s.total / 2, s.total) - s.total / 2;
+      if (e.clientX >= thumbLeft && e.clientX <= thumbLeft + thumbW) { halt(); bo0 = s.offset; return; }
+      bo0 = clamp(((e.clientX - r.left - thumbW / 2) / (r.width - thumbW)) * s.max, 0, s.max);
       glideTo(nearest(bo0), s.vel);
     };
     const barMove = (e: PointerEvent) => {
       if (e.pointerId !== bid || !b) return;
       if (!bMoved && Math.abs(e.clientX - bx0) < 3) return;
       bMoved = true; halt();
-      s.offset = s.target = bo0 + ((e.clientX - bx0) / b.getBoundingClientRect().width) * s.total; paint();
+      const r = b.getBoundingClientRect(), size = s.view / (s.view + s.max);
+      s.offset = s.target = clamp(bo0 + ((e.clientX - bx0) / (r.width * (1 - size))) * s.max, 0, s.max); paint();
     };
     const barUp = (e: PointerEvent) => {
       if (e.pointerId !== bid || !b) return;
@@ -226,7 +238,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       b?.removeEventListener('pointerup', barUp);
       b?.removeEventListener('pointercancel', barUp);
     };
-  }, [copies, levels.length, s]);
+  }, [levels.length, s]);
 
   useEffect(() => {
     const el = rail.current; if (!el) return;
@@ -238,7 +250,7 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
     }, { root: el, threshold: 0.6 });
     el.querySelectorAll('[data-level]').forEach((c) => io.observe(c));
     return () => io.disconnect();
-  }, [copies]);
+  }, []);
 
   const page = (dir: number) => {
     const el = rail.current, card = el?.children[1] as HTMLElement | undefined, first = el?.children[0] as HTMLElement | undefined;
@@ -251,29 +263,27 @@ export function LevelRail({ levels, heading }: { levels: Level[]; heading: React
       <div className="levels-head">
         {heading}
         <div className="rail-controls">
-          <button className="icon-btn" onClick={() => page(-1)} aria-label="Previous restaurants"><ArrowL /></button>
-          <button className="icon-btn" onClick={() => page(1)} aria-label="Next restaurants"><ArrowR /></button>
+          <button className="icon-btn" onClick={() => page(-1)} disabled={edges.start} aria-label="Previous restaurants"><ArrowL /></button>
+          <button className="icon-btn" onClick={() => page(1)} disabled={edges.end} aria-label="Next restaurants"><ArrowR /></button>
         </div>
       </div>
       <div className="rail" ref={rail} role="list" aria-label="Restaurants" aria-roledescription="carousel" tabIndex={0}>
-        {Array.from({ length: copies }).flatMap((_, c) => [
-          ...levels.map((l) => (
-            <article key={`${c}-${l.id}`} className="level-card" role={c ? undefined : 'listitem'} aria-hidden={c ? true : undefined} data-level={c ? undefined : l.id}>
-              <Media media={l.media} label={`${l.title} clip`} />
-              <p className="num">Restaurant {String(l.number).padStart(2, '0')}</p>
-              <h3>{l.title}</h3>
-              <p>{l.oneLiner}</p>
-            </article>
-          )),
-          <article key={`${c}-next`} className="level-card next" role={c ? undefined : 'listitem'} aria-hidden={c ? true : undefined}>
-            <span className="q" aria-hidden="true">?</span>
-            <h3>More on the way</h3>
-            <p>Bagel Café and more kitchens are being cooked up. Keep earning to unlock them.</p>
-          </article>,
-        ])}
+        {levels.map((l) => (
+          <article key={l.id} className="level-card" role="listitem" data-level={l.id}>
+            <Media media={l.media} label={`${l.title} clip`} />
+            <p className="num">Restaurant {String(l.number).padStart(2, '0')}</p>
+            <h3>{l.title}</h3>
+            <p>{l.oneLiner}</p>
+          </article>
+        ))}
+        <article className="level-card next" role="listitem">
+          <span className="q" aria-hidden="true">?</span>
+          <h3>More on the way</h3>
+          <p>Bagel Café and more kitchens are being cooked up. Keep earning to unlock them.</p>
+        </article>
       </div>
-      <div className="rail-scrub" ref={bar} aria-hidden="true">
-        <div className="rail-progress"><span ref={thumbA} /><span ref={thumbB} className="wrap" /></div>
+      <div className="rail-scrub" ref={bar} aria-hidden="true" hidden={!edges.scrollable}>
+        <div className="rail-progress"><span ref={thumb} /></div>
       </div>
     </>
   );
