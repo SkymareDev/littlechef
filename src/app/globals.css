@@ -236,6 +236,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); }
 .article { max-width: 68ch; }
 .article p { margin-top: var(--s-4); font-size: 1.125rem; }
+.article h2 { font-size: var(--t-xl); max-width: none; line-height: 1.15; margin-top: var(--s-7); }
+.article h3 { font-size: var(--t-lg); line-height: 1.25; margin-top: var(--s-6); }
+.article h3 + p { margin-top: var(--s-2); }
+.article ul { margin-top: var(--s-3); padding-left: 1.25em; }
+.article li { margin-top: var(--s-2); font-size: 1.125rem; line-height: 1.6; }
 
 /* ===== Final CTA ===== */
 .final { text-align: center; }

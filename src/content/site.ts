@@ -20,9 +20,16 @@ export const site = {
   releaseState: 'live' as 'coming-soon' | 'live',
   releaseLabel: 'Out now on Google Play and the App Store',
   contactEmail: 'admin@skymare.co',
-  pressEmail: 'press@example.com',             // TBD
+  pressEmail: 'admin@skymare.co',
   supportEmail: 'admin@skymare.co',
   locale: 'en_US',
+};
+
+/** The company that publishes the game (the developer named on Google Play and the App Store). */
+export const company = {
+  name: 'Skymare Technology JSC',
+  address: '68/116 Nhan Hoa, Thanh Xuan, Hanoi, Vietnam',
+  email: 'admin@skymare.co',
 };
 
 export const storeLinks = {

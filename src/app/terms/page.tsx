@@ -1,17 +1,10 @@
 import Link from 'next/link';
 import { pageMeta } from '@/lib/seo';
-import { site } from '@/content/site';
+import { site, company as COMPANY } from '@/content/site';
 
 export const metadata = pageMeta({ title: 'Terms of service', path: '/terms/' });
 
 const LAST_UPDATED = 'November 18, 2026';
-
-/** The publisher of the Game, as listed on Google Play and the App Store (from skymare.co/term-of-service). */
-const COMPANY = {
-  name: 'Skymare Technology JSC',
-  address: '68/116 Nhan Hoa, Thanh Xuan, Hanoi, Vietnam',
-  email: 'admin@skymare.co',
-};
 
 /**
  * Based on the studio's company-wide terms (skymare.co/term-of-service), adapted to Little Chef: no account,
