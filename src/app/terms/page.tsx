@@ -19,7 +19,6 @@ const COMPANY = {
  */
 export default function Page() {
   const mail = <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>;
-  const support = <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>;
   const privacy = <Link href="/privacy/">Privacy Policy</Link>;
   return (
     <div className="wrap article" style={{ paddingBottom: 96 }}>
@@ -213,7 +212,6 @@ export default function Page() {
         <li><strong>Address:</strong> {COMPANY.address}</li>
         <li><strong>Email:</strong> {mail}</li>
       </ul>
-      <p>For help with the Game, such as bugs or purchases, email {support}.</p>
     </div>
   );
 }

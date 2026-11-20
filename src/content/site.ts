@@ -19,9 +19,9 @@ export const site = {
   /** 'coming-soon' shows pre-register / notify; 'live' shows Get it on / Download. */
   releaseState: 'live' as 'coming-soon' | 'live',
   releaseLabel: 'Out now on Google Play and the App Store',
-  contactEmail: 'tdifferentfc@gmail.com',
+  contactEmail: 'admin@skymare.co',
   pressEmail: 'press@example.com',             // TBD
-  supportEmail: 'tdifferentfc@gmail.com',
+  supportEmail: 'admin@skymare.co',
   locale: 'en_US',
 };
 
